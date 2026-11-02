@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Paa Jim Kitchen · Order queue</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}a{color:#C1121F}a:hover{color:#8E0D17}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #F7F4F2; color: #1A1A1A; overflow: hidden; display: flex; flex-direction: column">
+<div style="background: #1A1A1A; color: #FFFFFF; padding: 52px 20px 18px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: #C1121F; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 48 48" fill="none" stroke="#FFFFFF" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 24h36a18 18 0 0 1-36 0z"/><path d="M16 17c0-3 3-3 3-6M24 17c0-3 3-3 3-6M32 17c0-3 3-3 3-6"/></svg></span>
+<div style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 12px; opacity: 0.75">Vendor</span><span style="font-size: 17px; font-weight: 800">Paa Jim’s Kitchen</span></div>
+<button onClick="{{toggle}}" aria-label="Kitchen open toggle" style="height: 40px; padding: 0 6px 0 12px; border: 0; border-radius: 20px; background: {{pillBg}}; color: #FFFFFF; display: flex; align-items: center; gap: 8px; font-family: inherit; font-size: 13px; font-weight: 700">{{pillText}}<span style="width: 30px; height: 30px; border-radius: 50%; background: #FFFFFF"></span></button>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<div style="padding: 10px 12px; border-radius: 14px; background: #2B2B2B; display: flex; flex-direction: column"><span style="font-size: 22px; font-weight: 800; color: #FF8A8F">1</span><span style="font-size: 11px; opacity: 0.8">New</span></div>
+<div style="padding: 10px 12px; border-radius: 14px; background: #2B2B2B; display: flex; flex-direction: column"><span style="font-size: 22px; font-weight: 800">3</span><span style="font-size: 11px; opacity: 0.8">Cooking</span></div>
+<div style="padding: 10px 12px; border-radius: 14px; background: #2B2B2B; display: flex; flex-direction: column"><span style="font-size: 22px; font-weight: 800">1</span><span style="font-size: 11px; opacity: 0.8">Awaiting rider</span></div>
+</div>
+</div>
+<div style="padding: 16px; display: flex; flex-direction: column; gap: 12px; flex: 1; overflow: hidden">
+<h2 style="margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #A00F1A">New order</h2>
+<div style="background: #FFFFFF; border-radius: 18px; border: 2px solid #C1121F; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 17px; font-weight: 800">#PJ-1043</span><span style="height: 28px; padding: 0 10px; border-radius: 14px; background: #FDECEC; color: #A00F1A; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A00F1A" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Auto-cancel in 6:12</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 14px"><span><b>2×</b> Jollof &amp; Chicken</span><span><b>2×</b> Bottled water 500ml</span><span style="font-size: 12px; color: #5B5B5B">Note: less pepper please</span></div>
+<div style="display: flex; justify-content: space-between; font-size: 13px; color: #5B5B5B"><span>Paid · MoMo</span><span>1.9 km · GH₵ 130.00</span></div>
+<div style="display: flex; gap: 10px">
+<button style="flex: 1; height: 50px; border-radius: 14px; border: 1.5px solid #ECE7E4; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700; color: #1A1A1A">Reject</button>
+<a href="VendorOrder.dc.html" style="flex: 2; height: 50px; border-radius: 14px; background: #C1121F; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700">Accept order</a>
+</div>
+</div>
+<h2 style="margin: 6px 0 0; font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #5B5B5B">In the kitchen</h2>
+<sc-for list="{{cooking}}" as="o" hint-placeholder-count="3">
+<a href="VendorOrder.dc.html" style="background: #FFFFFF; border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #1A1A1A">
+<span style="width: 10px; height: 10px; border-radius: 50%; background: {{o.dot}}"></span>
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">{{o.no}}</span><span style="font-size: 12px; color: #5B5B5B">{{o.items}}</span></span>
+<span style="font-size: 12px; font-weight: 700; color: {{o.statusColor}}">{{o.status}}</span>
+</a>
+</sc-for>
+</div>
+<nav style="height: 82px; border-top: 1px solid #ECE7E4; background: #FFFFFF; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding-bottom: 14px; box-sizing: border-box; flex-shrink: 0">
+<a href="VendorQueue.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #C1121F; font-size: 11px; font-weight: 700"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="#C1121F" stroke="#C1121F" stroke-width="2" stroke-linejoin="round"><path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 0 1 6 0" fill="none"/></svg>Orders</a>
+<a href="VendorOverview.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B5B5B; font-size: 11px; font-weight: 600"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B5B5B" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>Overview</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { open: true }; }
+renderVals() {
+const open = this.state.open;
+return {
+toggle: () => this.setState({ open: !open }),
+pillBg: open ? '#1E8E3E' : '#5B5B5B',
+pillText: open ? 'Open' : 'Paused',
+cooking: [
+{ no: '#PJ-1042', items: 'Jollof, Assorted fried rice, Can', status: 'Ready · 284 615', statusColor: '#146C2E', dot: '#1E8E3E' },
+{ no: '#PJ-1041', items: 'Assorted Jollof ×2, Glass ×2', status: 'Cooking · 9 min', statusColor: '#8A5A00', dot: '#E09A00' },
+{ no: '#PJ-1040', items: 'Fried Rice & Beef, Water 1.5L', status: 'Cooking · 4 min', statusColor: '#8A5A00', dot: '#E09A00' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Paa Jim Admin · Sign in</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}a{color:#C1121F}a:hover{color:#8E0D17}</style>
+</helmet>
+<div style="min-height: 100vh; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #F7F4F2; color: #1A1A1A; display: flex; flex-wrap: wrap">
+<div style="flex: 1 1 420px; background: #C1121F; color: #FFFFFF; padding: 48px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px; position: relative; overflow: hidden; min-height: 320px">
+<svg aria-hidden="true" width="620" height="620" viewBox="0 0 620 620" style="position: absolute; right: -260px; bottom: -240px; opacity: 0.14" fill="none" stroke="#FFFFFF" stroke-width="2"><circle cx="310" cy="310" r="300"/><circle cx="310" cy="310" r="220"/><circle cx="310" cy="310" r="140"/></svg>
+<div style="display: flex; align-items: center; gap: 12px; position: relative">
+<span style="width: 48px; height: 48px; border-radius: 14px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="28" height="28" viewBox="0 0 48 48" fill="none" stroke="#C1121F" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 24h36a18 18 0 0 1-36 0z"/><path d="M16 17c0-3 3-3 3-6M24 17c0-3 3-3 3-6M32 17c0-3 3-3 3-6"/></svg></span>
+<span style="font-size: 22px; font-weight: 800">Paa Jim <span style="font-weight: 500; opacity: 0.85">Admin</span></span>
+</div>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 12px; max-width: 460px; position: relative">
+<h1 style="margin: 0; font-size: 40px; line-height: 1.1; font-weight: 800; letter-spacing: -0.02em">Money, people and switches — in one place.</h1>
+<p style="margin: 0; font-size: 16px; line-height: 1.6; opacity: 0.92">Prices, refunds, riders and the kitchen kill switch. Every action you take is logged with a reason.</p>
+</div>
+</div>
+<div style="flex: 999 1 520px; min-width: 0; display: flex; align-items: center; justify-content: center; padding: 48px 24px; box-sizing: border-box">
+<div style="width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h2 style="margin: 0; font-size: 28px; font-weight: 800">Sign in</h2>
+<p style="margin: 0; font-size: 15px; color: #5B5B5B">For the two Paa Jim admins only.</p>
+</div>
+<div style="display: flex; gap: 8px; font-size: 13px; font-weight: 700">
+<span style="flex: 1; height: 6px; border-radius: 3px; background: #C1121F"></span>
+<span style="flex: 1; height: 6px; border-radius: 3px; background: {{step2bar}}"></span>
+</div>
+<sc-if value="{{step1}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<label style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; font-weight: 700">Email
+<input type="email" value="admin@paajim.app" style="height: 50px; border-radius: 12px; border: 1.5px solid #E2DCD8; background: #FFFFFF; padding: 0 14px; font-family: inherit; font-size: 15px; font-weight: 500; color: #1A1A1A"></label>
+<label style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; font-weight: 700">Password
+<input type="password" value="••••••••••••" style="height: 50px; border-radius: 12px; border: 1.5px solid #E2DCD8; background: #FFFFFF; padding: 0 14px; font-family: inherit; font-size: 15px; color: #1A1A1A"></label>
+<button onClick="{{next}}" style="height: 52px; border: 0; border-radius: 14px; background: #C1121F; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 700">Continue</button>
+</div>
+</sc-if>
+<sc-if value="{{step2}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 16px">
+<div style="padding: 14px; border-radius: 14px; background: #FFFFFF; border: 1px solid #ECE7E4; display: flex; gap: 12px; align-items: center">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: #FDECEC; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C1121F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+<span style="font-size: 14px; line-height: 1.5; color: #5B5B5B"><b style="color: #1A1A1A">Two-step check.</b> Enter the 6-digit code from your authenticator app.</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px">
+<input aria-label="Digit 1" value="5" style="height: 58px; text-align: center; border-radius: 12px; border: 1.5px solid #E2DCD8; font-family: inherit; font-size: 22px; font-weight: 800; color: #1A1A1A; min-width: 0">
+<input aria-label="Digit 2" value="0" style="height: 58px; text-align: center; border-radius: 12px; border: 1.5px solid #E2DCD8; font-family: inherit; font-size: 22px; font-weight: 800; color: #1A1A1A; min-width: 0">
+<input aria-label="Digit 3" value="9" style="height: 58px; text-align: center; border-radius: 12px; border: 1.5px solid #E2DCD8; font-family: inherit; font-size: 22px; font-weight: 800; color: #1A1A1A; min-width: 0">
+<input aria-label="Digit 4" value="" style="height: 58px; text-align: center; border-radius: 12px; border: 2px solid #C1121F; font-family: inherit; font-size: 22px; font-weight: 800; color: #1A1A1A; min-width: 0">
+<input aria-label="Digit 5" value="" style="height: 58px; text-align: center; border-radius: 12px; border: 1.5px solid #E2DCD8; font-family: inherit; font-size: 22px; font-weight: 800; color: #1A1A1A; min-width: 0">
+<input aria-label="Digit 6" value="" style="height: 58px; text-align: center; border-radius: 12px; border: 1.5px solid #E2DCD8; font-family: inherit; font-size: 22px; font-weight: 800; color: #1A1A1A; min-width: 0">
+</div>
+<a href="AdminOverview.dc.html" style="height: 52px; border-radius: 14px; background: #C1121F; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700">Verify &amp; open dashboard</a>
+<button onClick="{{back}}" style="height: 40px; border: 0; background: transparent; font-family: inherit; font-size: 13px; font-weight: 700; color: #5B5B5B">Use a different account</button>
+</div>
+</sc-if>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { step: 1 }; }
+renderVals() {
+const s = this.state.step;
+return {
+step1: s === 1, step2: s === 2,
+step2bar: s === 2 ? '#C1121F' : '#E2DCD8',
+next: () => this.setState({ step: 2 }),
+back: () => this.setState({ step: 1 })
+};
+}
+}
+</script>
+</body>
+</html>

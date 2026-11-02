@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Paa Jim Admin · Team &amp; controls</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}a{color:#C1121F}a:hover{color:#8E0D17}</style>
+</helmet>
+<div style="min-height: 100vh; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #F7F4F2; color: #1A1A1A; display: flex; flex-wrap: wrap">
+<nav aria-label="Admin" style="flex: 1 1 240px; background: #1A1A1A; color: #FFFFFF; padding: 28px 18px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 8px 22px">
+<span style="width: 38px; height: 38px; border-radius: 11px; background: #C1121F; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 48 48" fill="none" stroke="#FFFFFF" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 24h36a18 18 0 0 1-36 0z"/><path d="M16 17c0-3 3-3 3-6M24 17c0-3 3-3 3-6M32 17c0-3 3-3 3-6"/></svg></span>
+<span style="font-size: 17px; font-weight: 800">Paa Jim <span style="font-weight: 500; opacity: 0.7">Admin</span></span>
+</div>
+<a href="AdminOverview.dc.html" style="height: 44px; padding: 0 12px; border-radius: 12px; color: #D6D0CC; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D6D0CC" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>Overview</a>
+<a href="AdminOrders.dc.html" style="height: 44px; padding: 0 12px; border-radius: 12px; color: #D6D0CC; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D6D0CC" stroke-width="2" stroke-linejoin="round"><path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg>Orders &amp; refunds</a>
+<a href="AdminMenu.dc.html" style="height: 44px; padding: 0 12px; border-radius: 12px; color: #D6D0CC; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D6D0CC" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Menu &amp; prices</a>
+<a href="AdminTeam.dc.html" style="height: 44px; padding: 0 12px; border-radius: 12px; background: #C1121F; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 700"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></svg>Team &amp; controls</a>
+<div style="margin-top: auto; padding: 14px 12px; border-radius: 14px; background: #2B2B2B; display: flex; align-items: center; gap: 10px">
+<span style="width: 34px; height: 34px; border-radius: 50%; background: #FDECEC; color: #C1121F; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800">MA</span>
+<span style="display: flex; flex-direction: column; font-size: 13px"><b>Michael A.</b><span style="font-size: 11px; color: #B8B1AD">Admin · 2FA on</span></span>
+</div>
+</nav>
+<main style="flex: 999 1 560px; min-width: 0; padding: 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 4px"><h1 style="margin: 0; font-size: 28px; font-weight: 800">Team &amp; controls</h1><span style="font-size: 14px; color: #5B5B5B">Kitchen switches, riders and staff. Every change asks for a reason and is logged.</span></div>
+<section style="background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 16px; border: {{killBorder}}">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px"><h2 style="margin: 0; font-size: 17px; font-weight: 800">Kitchen controls</h2><span style="font-size: 13px; color: {{killNoteColor}}; font-weight: 600">{{killNote}}</span></div>
+<button onClick="{{toggleKill}}" style="height: 48px; padding: 0 20px; border-radius: 12px; border: 0; background: {{killBtnBg}}; color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 800">{{killBtn}}</button>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px">
+<div style="padding: 14px; border-radius: 14px; background: #F7F4F2; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 13px; font-weight: 700">Max orders cooking at once</span>
+<div style="display: flex; align-items: center; gap: 10px">
+<button aria-label="Fewer" onClick="{{capDown}}" style="width: 44px; height: 44px; border: 0; border-radius: 12px; background: #FFFFFF; font-size: 20px; font-weight: 700; color: #1A1A1A">−</button>
+<span style="min-width: 40px; text-align: center; font-size: 24px; font-weight: 800">{{cap}}</span>
+<button aria-label="More" onClick="{{capUp}}" style="width: 44px; height: 44px; border: 0; border-radius: 12px; background: #C1121F; font-size: 20px; font-weight: 700; color: #FFFFFF">+</button>
+</div>
+</div>
+<div style="padding: 14px; border-radius: 14px; background: #F7F4F2; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 13px; font-weight: 700">Opening hours</span><span style="font-size: 20px; font-weight: 800">9:00 AM – 10:00 PM</span><span style="font-size: 12px; color: #5B5B5B">Daily · Africa/Accra</span></div>
+<div style="padding: 14px; border-radius: 14px; background: #F7F4F2; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 13px; font-weight: 700">Auto-cancel unaccepted orders</span><span style="font-size: 20px; font-weight: 800">After 8 min</span><span style="font-size: 12px; color: #5B5B5B">SMS the kitchen at 5 min · full refund</span></div>
+</div>
+</section>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<section style="flex: 2 1 520px; min-width: 0; background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-size: 17px; font-weight: 800">People</h2><span style="font-size: 13px; color: #5B5B5B">3 riders · 1 kitchen operator · 2 admins</span></div>
+<div style="overflow-x: auto">
+<table style="width: 100%; min-width: 560px; border-collapse: collapse; font-size: 14px">
+<thead><tr style="text-align: left; color: #5B5B5B; font-size: 13px"><th style="padding: 10px 8px; font-weight: 700">Name</th><th style="padding: 10px 8px; font-weight: 700">Role</th><th style="padding: 10px 8px; font-weight: 700">Phone</th><th style="padding: 10px 8px; font-weight: 700">Today</th><th style="padding: 10px 8px; font-weight: 700">Status</th><th style="padding: 10px 8px"></th></tr></thead>
+<tbody>
+<sc-for list="{{people}}" as="p" hint-placeholder-count="6">
+<tr style="border-top: 1px solid #F0EBE8">
+<td style="padding: 12px 8px"><span style="display: flex; align-items: center; gap: 10px"><span style="width: 34px; height: 34px; border-radius: 50%; background: {{p.av}}; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #5B3A2A">{{p.ini}}</span><b style="font-weight: 700">{{p.name}}</b></span></td>
+<td style="padding: 12px 8px">{{p.role}}</td>
+<td style="padding: 12px 8px; color: #5B5B5B">{{p.phone}}</td>
+<td style="padding: 12px 8px; color: #5B5B5B">{{p.today}}</td>
+<td style="padding: 12px 8px"><span style="padding: 4px 10px; border-radius: 10px; background: {{p.sbg}}; color: {{p.sfg}}; font-size: 12px; font-weight: 700">{{p.status}}</span></td>
+<td style="padding: 12px 8px; text-align: right"><button style="height: 34px; padding: 0 12px; border-radius: 10px; border: 1.5px solid #E2DCD8; background: #FFFFFF; font-family: inherit; font-size: 12px; font-weight: 700; color: #1A1A1A">{{p.action}}</button></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+<div style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<section style="background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800">Add a rider</h2>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 700">Full name<input type="text" placeholder="As on Ghana Card" style="height: 44px; border-radius: 10px; border: 1.5px solid #E2DCD8; padding: 0 12px; font-family: inherit; font-size: 14px; font-weight: 500"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 700">Phone (sign-in number)<input type="tel" placeholder="+233 …" style="height: 44px; border-radius: 10px; border: 1.5px solid #E2DCD8; padding: 0 12px; font-family: inherit; font-size: 14px; font-weight: 500"></label>
+<button style="height: 46px; border: 0; border-radius: 12px; background: #C1121F; color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700">Create rider account</button>
+</section>
+<section style="background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800">Audit log</h2>
+<sc-for list="{{log}}" as="l" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 2px; padding: 8px 0; border-top: 1px solid #F0EBE8; font-size: 13px"><span><b>{{l.who}}</b> {{l.what}}</span><span style="font-size: 12px; color: #5B5B5B">{{l.when}} · “{{l.why}}”</span></div>
+</sc-for>
+</section>
+</div>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { paused: false, cap: 6 }; }
+renderVals() {
+const paused = this.state.paused, cap = this.state.cap;
+const st = { on: ['On shift', '#E8F5EC', '#146C2E'], off: ['Off shift', '#F2EEEC', '#5B5B5B'], act: ['Active', '#E8F5EC', '#146C2E'] };
+const person = (name, ini, role, phone, today, s, action, av) => ({ name, ini, role, phone, today, status: st[s][0], sbg: st[s][1], sfg: st[s][2], action, av });
+return {
+paused, cap,
+toggleKill: () => this.setState({ paused: !paused }),
+capUp: () => this.setState({ cap: Math.min(15, cap + 1) }),
+capDown: () => this.setState({ cap: Math.max(1, cap - 1) }),
+killBtn: paused ? 'Resume orders' : 'Pause all orders',
+killBtnBg: paused ? '#1E8E3E' : '#C1121F',
+killNote: paused ? 'Paused — customers see “Kitchen closed”. Orders in progress continue.' : 'Open — taking orders now',
+killNoteColor: paused ? '#A00F1A' : '#146C2E',
+killBorder: paused ? '2px solid #C1121F' : '2px solid transparent',
+people: [
+person('Kwame Asante', 'KA', 'Rider', '+233 24 ··· 1180', '6 deliveries', 'on', 'Suspend', '#E7DCCB'),
+person('Yaw Darko', 'YD', 'Rider', '+233 55 ··· 9021', '4 deliveries', 'on', 'Suspend', '#F6E5C2'),
+person('Kojo Mensah', 'KM', 'Rider', '+233 20 ··· 4417', '—', 'off', 'Suspend', '#DCEBF5'),
+person('Paa Jim', 'PJ', 'Kitchen operator', '+233 24 ··· 7700', '46 orders', 'act', 'Edit', '#F9DCCB'),
+person('Michael A.', 'MA', 'Admin', '+233 24 ··· 0042', '—', 'act', 'Edit', '#FDECEC'),
+person('[Second admin]', 'A2', 'Admin', '—', '—', 'act', 'Edit', '#F2EEEC')
+],
+log: [
+{ who: 'Michael A.', what: 'changed Assorted Jollof 65 → 70', when: 'Today 9:02 AM', why: 'Chicken supplier raised prices' },
+{ who: 'Michael A.', what: 'refunded #PJ-1027 · GH₵ 60', when: 'Fri 1:30 PM', why: 'Customer not home, food returned' },
+{ who: 'Paa Jim', what: 'marked Malt · glass sold out', when: 'Today 6:40 PM', why: 'Crate finished' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Paa Jim Rider · Active delivery</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}a{color:#C1121F}a:hover{color:#8E0D17}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #EDEAE6; color: #1A1A1A; overflow: hidden; position: relative">
+<svg role="img" aria-label="Navigation map to the customer" width="390" height="460" viewBox="0 0 390 460" style="position: absolute; top: 0; left: 0">
+<rect width="390" height="460" fill="#EDEAE6"/>
+<g fill="none" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round"><path d="M-10 120 H400"/><path d="M-10 300 H400"/><path d="M90 -10 V470"/><path d="M290 -10 V470"/></g>
+<g fill="none" stroke="#FFFFFF" stroke-width="7"><path d="M-10 210 H400"/><path d="M190 -10 V470"/><path d="M-10 400 H400"/></g>
+<rect x="200" y="130" width="80" height="70" rx="4" fill="#DCE8D2"/>
+<path d="M90 400 V300 H190 V210 H290 V120" fill="none" stroke="#C1121F" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="190" cy="270" r="20" fill="#1A1A1A" stroke="#FFFFFF" stroke-width="4"/>
+<path d="M190 258 l8 18 -8 -4 -8 4z" fill="#FFFFFF"/>
+<path d="M290 92c-11 0-18 8-18 17 0 13 18 28 18 28s18-15 18-28c0-9-7-17-18-17z" fill="#C1121F" stroke="#FFFFFF" stroke-width="3"/>
+<circle cx="290" cy="110" r="6" fill="#FFFFFF"/>
+</svg>
+<div style="position: absolute; top: 50px; left: 16px; right: 16px; background: #1A1A1A; color: #FFFFFF; border-radius: 18px; padding: 14px 16px; display: flex; align-items: center; gap: 14px">
+<svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V8h8M13 4l4 4-4 4"/></svg>
+<div style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 18px; font-weight: 800">Turn right in 200 m</span><span style="font-size: 12px; opacity: 0.8">then left at the church · 1.6 km left</span></div>
+</div>
+<div style="position: absolute; left: 0; right: 0; bottom: 0; background: #FFFFFF; border-radius: 28px 28px 0 0; box-shadow: 0 -8px 30px rgba(0,0,0,0.1); padding: 12px 20px 30px; display: flex; flex-direction: column; gap: 14px">
+<span style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #E2DCD8"></span>
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 13px; font-weight: 800; color: #5B5B5B">#PJ-1042 · 3 items</span><span style="height: 28px; padding: 0 10px; border-radius: 14px; background: {{chipBg}}; color: {{chipColor}}; display: flex; align-items: center; font-size: 12px; font-weight: 800">{{chip}}</span></div>
+<div style="display: flex; align-items: center; gap: 12px">
+<span style="width: 44px; height: 44px; border-radius: 50%; background: #FDECEC; color: #C1121F; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800">AM</span>
+<div style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 16px; font-weight: 700">Ama M.</span><span style="font-size: 12px; color: #5B5B5B">AK-485-9302 · Blue gate opposite the church</span></div>
+<a href="#" aria-label="Call customer" style="width: 44px; height: 44px; border-radius: 14px; background: #F7F4F2; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C1121F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></a>
+</div>
+<sc-if value="{{enroute}}" hint-placeholder-val="{{true}}">
+<button onClick="{{arrive}}" style="height: 58px; border: 0; border-radius: 16px; background: #C1121F; color: #FFFFFF; font-family: inherit; font-size: 17px; font-weight: 800">I’ve arrived</button>
+</sc-if>
+<sc-if value="{{arrived}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 14px; font-weight: 700">Ask the customer for their 4-digit delivery code</span>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px">
+<span style="height: 56px; border-radius: 14px; background: #F7F4F2; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800">7</span>
+<span style="height: 56px; border-radius: 14px; background: #F7F4F2; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800">3</span>
+<span style="height: 56px; border-radius: 14px; background: #F7F4F2; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800">1</span>
+<span style="height: 56px; border-radius: 14px; border: 2px solid #C1121F; box-sizing: border-box"></span>
+</div>
+<button onClick="{{deliver}}" style="height: 58px; border: 0; border-radius: 16px; background: #C1121F; color: #FFFFFF; font-family: inherit; font-size: 17px; font-weight: 800">Confirm delivery</button>
+<button style="height: 40px; border: 0; background: transparent; font-family: inherit; font-size: 13px; font-weight: 700; color: #5B5B5B">Customer not here? Report a problem</button>
+</div>
+</sc-if>
+<sc-if value="{{done}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 6px 0">
+<span style="width: 56px; height: 56px; border-radius: 50%; background: #1E8E3E; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7"/></svg></span>
+<span style="font-size: 18px; font-weight: 800">Delivered — nice work!</span>
+<a href="RiderClaim.dc.html" style="margin-top: 6px; width: 100%; height: 54px; border-radius: 16px; background: #1A1A1A; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700">Back to kitchen</a>
+</div>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { stage: 'enroute' }; }
+renderVals() {
+const s = this.state.stage;
+const chips = { enroute: ['EN ROUTE', '#FDECEC', '#A00F1A'], arrived: ['ARRIVED', '#FFF4D6', '#7A5600'], done: ['DELIVERED', '#E8F5EC', '#146C2E'] };
+const [chip, chipBg, chipColor] = chips[s];
+return {
+enroute: s === 'enroute', arrived: s === 'arrived', done: s === 'done',
+chip, chipBg, chipColor,
+arrive: () => this.setState({ stage: 'arrived' }),
+deliver: () => this.setState({ stage: 'done' })
+};
+}
+}
+</script>
+</body>
+</html>

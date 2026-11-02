@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Paa Jim · Jollof &amp; Chicken</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}a{color:#C1121F}a:hover{color:#8E0D17}input[type=checkbox]{accent-color:#C1121F}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #FFFFFF; color: #1A1A1A; overflow: hidden; display: flex; flex-direction: column; position: relative">
+<div style="height: 330px; background: #FDECEC; position: relative; flex-shrink: 0; display: flex; align-items: center; justify-content: center">
+<div style="width: 230px; height: 230px; border-radius: 50%; background: #F9DCCB; box-shadow: 0 18px 36px rgba(193,18,31,0.18); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #6B2A12">[Photo: Jollof &amp; Chicken]</div>
+<div style="position: absolute; top: 50px; left: 20px; right: 20px; display: flex; justify-content: space-between">
+<a href="Menu.dc.html" aria-label="Back" style="width: 44px; height: 44px; border-radius: 14px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></a>
+<button aria-label="Save to favourites" style="width: 44px; height: 44px; border: 0; border-radius: 14px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C1121F" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+</div>
+</div>
+<div style="padding: 22px 20px 0; display: flex; flex-direction: column; gap: 8px">
+<span style="align-self: flex-start; height: 26px; padding: 0 10px; border-radius: 13px; background: #FDECEC; color: #A00F1A; display: flex; align-items: center; font-size: 12px; font-weight: 700">Bestseller</span>
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<h1 style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.01em">Jollof &amp; Chicken</h1>
+<span style="font-size: 22px; font-weight: 800; color: #C1121F; white-space: nowrap">GH₵ 55</span>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 1.55; color: #5B5B5B">Smoky party jollof cooked over firewood, a quarter grilled chicken, coleslaw and a spoon of Paa Jim’s shito.</p>
+<div style="display: flex; gap: 16px; padding-top: 4px; font-size: 13px; font-weight: 600; color: #5B5B5B">
+<span style="display: flex; align-items: center; gap: 5px"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="#F2A900"><polygon points="12,3 14.8,9 21,9.5 16.2,13.6 17.8,20 12,16.6 6.2,20 7.8,13.6 3,9.5 9.2,9"/></svg>4.9 (210)</span>
+<span style="display: flex; align-items: center; gap: 5px"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5B5B5B" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>15 min prep</span>
+<span>Medium spicy</span>
+</div>
+</div>
+<h2 style="margin: 20px 20px 4px; font-size: 16px; font-weight: 800">Add a cold drink <span style="font-size: 12px; font-weight: 600; color: #5B5B5B">· optional</span></h2>
+<div style="padding: 0 20px; display: flex; flex-direction: column">
+<sc-for list="{{extras}}" as="x" hint-placeholder-count="3">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0EBE8; font-size: 14px; font-weight: 600">
+<span style="width: 36px; height: 36px; border-radius: 10px; background: {{x.bg}}"></span>
+<span style="flex: 1">{{x.name}}</span>
+<span style="color: #5B5B5B; font-weight: 600">+GH₵ {{x.price}}</span>
+<input type="checkbox" checked="{{x.on}}" onChange="{{x.toggle}}" style="width: 22px; height: 22px">
+</label>
+</sc-for>
+</div>
+<div style="margin-top: auto; padding: 14px 20px 32px; border-top: 1px solid #ECE7E4; display: flex; gap: 12px; align-items: center">
+<div style="height: 54px; border-radius: 16px; background: #F7F4F2; display: flex; align-items: center; gap: 4px; padding: 0 6px">
+<button aria-label="Decrease quantity" onClick="{{dec}}" style="width: 44px; height: 44px; border: 0; border-radius: 12px; background: #FFFFFF; font-size: 20px; font-weight: 700; color: #1A1A1A">−</button>
+<span style="width: 28px; text-align: center; font-size: 16px; font-weight: 800">{{qty}}</span>
+<button aria-label="Increase quantity" onClick="{{inc}}" style="width: 44px; height: 44px; border: 0; border-radius: 12px; background: #C1121F; font-size: 20px; font-weight: 700; color: #FFFFFF">+</button>
+</div>
+<a href="Cart.dc.html" style="flex: 1; height: 54px; border-radius: 16px; background: #C1121F; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 700">Add · GH₵ {{total}}</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { qty: 1, on: { water: false, can: true, glass: false } }; }
+renderVals() {
+const list = [
+{ id: 'water', name: 'Bottled water 500ml', price: 5, bg: '#DCEBF5' },
+{ id: 'can', name: 'Soft drink · can', price: 10, bg: '#F3D0DA' },
+{ id: 'glass', name: 'Soft drink · glass bottle', price: 8, bg: '#E3EAD5' }
+];
+const on = this.state.on;
+const extras = list.map((x) => ({ ...x, on: !!on[x.id], toggle: () => this.setState({ on: { ...on, [x.id]: !on[x.id] } }) }));
+const add = list.reduce((s, x) => s + (on[x.id] ? x.price : 0), 0);
+const total = ((55 + add) * this.state.qty).toFixed(2);
+return {
+extras, qty: this.state.qty, total,
+inc: () => this.setState({ qty: this.state.qty + 1 }),
+dec: () => this.setState({ qty: Math.max(1, this.state.qty - 1) })
+};
+}
+}
+</script>
+</body>
+</html>

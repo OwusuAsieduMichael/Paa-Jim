@@ -1,0 +1,25 @@
+{
+  "name": "paajim",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Paa Jim — single-vendor community food delivery (GoXpress blueprint)",
+  "scripts": {
+    "mobile": "npm run start -w mobile",
+    "api": "npm run dev -w api",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "db:start": "supabase start",
+    "db:reset": "supabase db reset",
+    "types": "supabase gen types typescript --local > packages/types/src/database.ts"
+  },
+  "devDependencies": {
+    "supabase": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}

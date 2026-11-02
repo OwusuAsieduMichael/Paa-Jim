@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Paa Jim · My orders</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}a{color:#C1121F}a:hover{color:#8E0D17}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #F7F4F2; color: #1A1A1A; overflow: hidden; display: flex; flex-direction: column">
+<div style="background: #FFFFFF; padding: 56px 20px 14px; display: flex; flex-direction: column; gap: 14px">
+<h1 style="margin: 0; font-size: 26px; font-weight: 800">My orders</h1>
+<div style="display: flex; gap: 8px; padding: 4px; border-radius: 14px; background: #F7F4F2">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+<button onClick="{{t.pick}}" style="flex: 1; height: 40px; border: 0; border-radius: 11px; background: {{t.bg}}; color: {{t.color}}; font-family: inherit; font-size: 13px; font-weight: 700">{{t.name}}</button>
+</sc-for>
+</div>
+</div>
+<div style="padding: 14px 16px 0; display: flex; flex-direction: column; gap: 12px; flex: 1; overflow: hidden">
+<sc-if value="{{showActive}}" hint-placeholder-val="{{true}}">
+<a href="Tracking.dc.html" style="display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 18px; background: #FFFFFF; border: 2px solid #C1121F; text-decoration: none; color: #1A1A1A">
+<span style="display: flex; justify-content: space-between; align-items: center"><span style="height: 26px; padding: 0 10px; border-radius: 13px; background: #FDECEC; color: #A00F1A; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700"><span style="width: 7px; height: 7px; border-radius: 50%; background: #C1121F"></span>On the way</span><span style="font-size: 13px; font-weight: 700">#PJ-1042</span></span>
+<span style="display: flex; gap: 12px; align-items: center"><span style="width: 52px; height: 52px; border-radius: 14px; background: #F9DCCB"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 700">Jollof &amp; Chicken + 2 more</span><span style="font-size: 12px; color: #5B5B5B">Arriving ~8:45 PM</span></span><span style="font-size: 15px; font-weight: 800">GH₵ 150</span></span>
+<span style="height: 44px; border-radius: 12px; background: #C1121F; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700">Track live</span>
+</a>
+</sc-if>
+<sc-if value="{{showPast}}" hint-placeholder-val="{{true}}">
+<sc-for list="{{past}}" as="o" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 18px; background: #FFFFFF">
+<div style="display: flex; justify-content: space-between; font-size: 12px; color: #5B5B5B; font-weight: 600"><span>{{o.date}}</span><span style="color: {{o.statusColor}}; font-weight: 700">{{o.status}}</span></div>
+<div style="display: flex; gap: 12px; align-items: center">
+<span style="width: 52px; height: 52px; border-radius: 14px; background: {{o.bg}}"></span>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 700">{{o.items}}</span><span style="font-size: 12px; color: #5B5B5B">{{o.no}} · {{o.note}}</span></div>
+<span style="font-size: 15px; font-weight: 800">{{o.total}}</span>
+</div>
+<div style="display: flex; gap: 10px">
+<a href="Rate.dc.html" style="flex: 1; height: 42px; border-radius: 12px; border: 1.5px solid #ECE7E4; color: #1A1A1A; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700">{{o.left}}</a>
+<a href="Cart.dc.html" style="flex: 1; height: 42px; border-radius: 12px; background: #FDECEC; color: #A00F1A; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700">Reorder</a>
+</div>
+</div>
+</sc-for>
+</sc-if>
+</div>
+<nav style="height: 82px; border-top: 1px solid #ECE7E4; background: #FFFFFF; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding-bottom: 14px; box-sizing: border-box; flex-shrink: 0">
+<a href="Home.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B5B5B; font-size: 11px; font-weight: 600"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B5B5B" stroke-width="2" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Home</a>
+<a href="Menu.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B5B5B; font-size: 11px; font-weight: 600"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B5B5B" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Menu</a>
+<a href="Orders.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #C1121F; font-size: 11px; font-weight: 700"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="#C1121F" stroke="#C1121F" stroke-width="2" stroke-linejoin="round"><path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 0 1 6 0" fill="none"/></svg>Orders</a>
+<a href="Profile.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B5B5B; font-size: 11px; font-weight: 600"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B5B5B" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Account</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { tab: 'All' }; }
+renderVals() {
+const tab = this.state.tab;
+const tabs = ['All', 'Active', 'Past'].map((n) => ({ name: n, bg: n === tab ? '#C1121F' : 'transparent', color: n === tab ? '#FFFFFF' : '#5B5B5B', pick: () => this.setState({ tab: n }) }));
+return {
+tabs,
+showActive: tab !== 'Past',
+showPast: tab !== 'Active',
+past: [
+{ date: 'Sat, 31 Oct · 1:20 PM', status: 'Delivered', statusColor: '#146C2E', items: 'Fried Rice & Beef ×2', no: '#PJ-1031', note: 'You rated 5★', total: 'GH₵ 115', bg: '#F6E5C2', left: 'View receipt' },
+{ date: 'Wed, 28 Oct · 7:05 PM', status: 'Refunded', statusColor: '#A00F1A', items: 'Assorted Jollof + water', no: '#PJ-1019', note: 'Kitchen was full', total: 'GH₵ 90', bg: '#F7D5B8', left: 'Refund details' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

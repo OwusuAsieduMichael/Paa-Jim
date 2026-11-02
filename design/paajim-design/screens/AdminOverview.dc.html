@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Paa Jim Admin · Overview</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}a{color:#C1121F}a:hover{color:#8E0D17}</style>
+</helmet>
+<div style="min-height: 100vh; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #F7F4F2; color: #1A1A1A; display: flex; flex-wrap: wrap">
+<nav aria-label="Admin" style="flex: 1 1 240px; background: #1A1A1A; color: #FFFFFF; padding: 28px 18px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 8px 22px">
+<span style="width: 38px; height: 38px; border-radius: 11px; background: #C1121F; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 48 48" fill="none" stroke="#FFFFFF" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 24h36a18 18 0 0 1-36 0z"/><path d="M16 17c0-3 3-3 3-6M24 17c0-3 3-3 3-6M32 17c0-3 3-3 3-6"/></svg></span>
+<span style="font-size: 17px; font-weight: 800">Paa Jim <span style="font-weight: 500; opacity: 0.7">Admin</span></span>
+</div>
+<a href="AdminOverview.dc.html" style="height: 44px; padding: 0 12px; border-radius: 12px; background: #C1121F; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 700"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>Overview</a>
+<a href="AdminOrders.dc.html" style="height: 44px; padding: 0 12px; border-radius: 12px; color: #D6D0CC; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D6D0CC" stroke-width="2" stroke-linejoin="round"><path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg>Orders &amp; refunds<span style="margin-left: auto; min-width: 22px; height: 22px; border-radius: 11px; background: #C1121F; color: #FFFFFF; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center">2</span></a>
+<a href="AdminMenu.dc.html" style="height: 44px; padding: 0 12px; border-radius: 12px; color: #D6D0CC; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D6D0CC" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Menu &amp; prices</a>
+<a href="AdminTeam.dc.html" style="height: 44px; padding: 0 12px; border-radius: 12px; color: #D6D0CC; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D6D0CC" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></svg>Team &amp; controls</a>
+<div style="margin-top: auto; padding: 14px 12px; border-radius: 14px; background: #2B2B2B; display: flex; align-items: center; gap: 10px">
+<span style="width: 34px; height: 34px; border-radius: 50%; background: #FDECEC; color: #C1121F; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800">MA</span>
+<span style="display: flex; flex-direction: column; font-size: 13px"><b>Michael A.</b><span style="font-size: 11px; color: #B8B1AD">Admin · 2FA on</span></span>
+</div>
+</nav>
+<main style="flex: 999 1 560px; min-width: 0; padding: 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 28px; font-weight: 800">Overview</h1>
+<span style="font-size: 14px; color: #5B5B5B">Monday, 2 November · figures below are sample data</span>
+</div>
+<div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+<span style="height: 40px; padding: 0 14px; border-radius: 20px; background: #E8F5EC; color: #146C2E; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700"><span style="width: 8px; height: 8px; border-radius: 50%; background: #1E8E3E"></span>Kitchen open · 4 of 6 order slots used</span>
+<a href="AdminTeam.dc.html" style="height: 44px; padding: 0 16px; border-radius: 12px; border: 1.5px solid #C1121F; color: #C1121F; text-decoration: none; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C1121F" stroke-width="2.2" stroke-linecap="round"><path d="M10 5v14M14 5v14"/></svg>Pause kitchen</a>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="5">
+<div style="background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; font-weight: 600; color: #5B5B5B">{{k.label}}</span>
+<span style="font-size: 28px; font-weight: 800; letter-spacing: -0.01em">{{k.value}}</span>
+<span style="font-size: 12px; font-weight: 700; color: {{k.trendColor}}">{{k.trend}}</span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 14px">
+<section style="flex: 2 1 460px; min-width: 0; background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><h2 style="margin: 0; font-size: 17px; font-weight: 800">Orders by hour</h2><span style="font-size: 12px; color: #5B5B5B">Today · 46 orders</span></div>
+<div role="img" aria-label="Bar chart of orders per hour, peaking at 8 PM with 9 orders" style="height: 200px; display: flex; align-items: flex-end; gap: 10px; border-bottom: 1px solid #ECE7E4">
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="13">
+<div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end">
+<span style="font-size: 11px; font-weight: 700; color: #5B5B5B">{{b.n}}</span>
+<span style="width: 100%; max-width: 34px; height: {{b.h}}; border-radius: 6px 6px 0 0; background: {{b.color}}"></span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; gap: 10px">
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="13"><span style="flex: 1; text-align: center; font-size: 11px; color: #5B5B5B">{{b.t}}</span></sc-for>
+</div>
+</section>
+<section style="flex: 1 1 300px; min-width: 0; background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800">Top sellers today</h2>
+<sc-for list="{{top}}" as="t" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; font-size: 13px"><span style="font-weight: 600">{{t.name}}</span><span style="font-weight: 800">{{t.n}}</span></div>
+<div style="height: 8px; border-radius: 4px; background: #F2EEEC"><div style="width: {{t.w}}; height: 8px; border-radius: 4px; background: {{t.color}}"></div></div>
+</div>
+</sc-for>
+</section>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 14px">
+<section style="flex: 2 1 460px; min-width: 0; background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><h2 style="margin: 0; font-size: 17px; font-weight: 800">Live orders</h2><a href="AdminOrders.dc.html" style="font-size: 13px; font-weight: 700; text-decoration: none">All orders</a></div>
+<div style="overflow-x: auto">
+<table style="width: 100%; min-width: 520px; border-collapse: collapse; font-size: 13px">
+<thead><tr style="text-align: left; color: #5B5B5B"><th style="padding: 8px 6px; font-weight: 700">Order</th><th style="padding: 8px 6px; font-weight: 700">Items</th><th style="padding: 8px 6px; font-weight: 700">Status</th><th style="padding: 8px 6px; font-weight: 700">Rider</th><th style="padding: 8px 6px; font-weight: 700; text-align: right">Total</th></tr></thead>
+<tbody>
+<sc-for list="{{live}}" as="o" hint-placeholder-count="5">
+<tr style="border-top: 1px solid #F0EBE8"><td style="padding: 12px 6px; font-weight: 800">{{o.no}}</td><td style="padding: 12px 6px">{{o.items}}</td><td style="padding: 12px 6px"><span style="padding: 4px 10px; border-radius: 10px; background: {{o.bg}}; color: {{o.fg}}; font-size: 12px; font-weight: 700; white-space: nowrap">{{o.status}}</span></td><td style="padding: 12px 6px; color: #5B5B5B">{{o.rider}}</td><td style="padding: 12px 6px; text-align: right; font-weight: 700">{{o.total}}</td></tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+<section style="flex: 1 1 300px; min-width: 0; background: #FFFFFF; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 17px; font-weight: 800">Needs attention</h2>
+<div style="padding: 14px; border-radius: 14px; background: #FDECEC; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 700; color: #8E0D17">Refund failed · #PJ-1019</span>
+<span style="font-size: 13px; color: #5B5B5B">GH₵ 90.00 to MTN ··· 2210 · attempt 5 of 5</span>
+<a href="AdminOrders.dc.html" style="align-self: flex-start; height: 36px; padding: 0 14px; border-radius: 10px; background: #C1121F; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; font-size: 13px; font-weight: 700">Retry refund</a>
+</div>
+<div style="padding: 14px; border-radius: 14px; background: #FFF6E0; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 700; color: #5A4300">Payment pending 3 min · #PJ-1045</span>
+<span style="font-size: 13px; color: #5B5B5B">Customer may not have approved the MoMo prompt</span>
+<a href="AdminOrders.dc.html" style="align-self: flex-start; height: 36px; padding: 0 14px; border-radius: 10px; border: 1.5px solid #8A6500; color: #5A4300; text-decoration: none; display: flex; align-items: center; font-size: 13px; font-weight: 700">Re-check with Paystack</a>
+</div>
+<div style="padding: 14px; border-radius: 14px; background: #F7F4F2; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 14px; font-weight: 700">Malt · glass bottle sold out</span>
+<span style="font-size: 13px; color: #5B5B5B">Marked unavailable by the kitchen at 6:40 PM</span>
+</div>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+renderVals() {
+const counts = [1, 3, 5, 4, 2, 1, 2, 3, 4, 6, 8, 9, 6];
+const hours = ['10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p','9p','10p'];
+const bars = counts.map((n, i) => ({ n, t: hours[i], h: Math.round(n / 9 * 160) + 'px', color: n === 9 ? '#C1121F' : '#F0B7BA' }));
+const top = [
+['Jollof & Chicken', 14, '#C1121F'], ['Assorted Jollof', 9, '#C1121F'], ['Assorted Fried Rice', 8, '#E09A00'],
+['Fried Rice & Chicken', 7, '#E09A00'], ['Drinks (water, cans, glass)', 31, '#1F6FB2']
+].map(([name, n, color]) => ({ name, n, color, w: Math.round(n / 31 * 100) + '%' }));
+const S = {
+cook: ['Cooking', '#FFF4D6', '#7A5600'], ready: ['Awaiting rider', '#E8F0FA', '#1F4E85'],
+road: ['On the way', '#FDECEC', '#8E0D17'], newo: ['New · 6 min left', '#FDECEC', '#8E0D17'], pend: ['Payment pending', '#F2EEEC', '#5B5B5B']
+};
+const row = (no, items, s, rider, total) => ({ no, items, status: S[s][0], bg: S[s][1], fg: S[s][2], rider, total });
+return {
+kpis: [
+{ label: 'Orders today', value: '46', trend: '▲ 12% vs last Monday', trendColor: '#146C2E' },
+{ label: 'Revenue today', value: 'GH₵ 3,280', trend: '▲ 9% vs last Monday', trendColor: '#146C2E' },
+{ label: 'Rejection rate', value: '2.1%', trend: 'Target under 5%', trendColor: '#5B5B5B' },
+{ label: 'Rider wait (median)', value: '4 min', trend: 'Ready → claimed', trendColor: '#5B5B5B' },
+{ label: 'Payment failures', value: '3.4%', trend: '▲ 1.2 pts — watch', trendColor: '#A00F1A' }
+],
+bars, top,
+live: [
+row('#PJ-1045', 'Jollof & Beef, Water', 'pend', '—', 'GH₵ 70'),
+row('#PJ-1043', 'Jollof & Chicken ×2, Water ×2', 'newo', '—', 'GH₵ 130'),
+row('#PJ-1042', 'Jollof, Assorted fried rice, Can', 'road', 'Kwame A.', 'GH₵ 150'),
+row('#PJ-1041', 'Assorted Jollof ×2, Glass ×2', 'cook', '—', 'GH₵ 171'),
+row('#PJ-1040', 'Fried Rice & Beef, Water 1.5L', 'ready', 'Waiting', 'GH₵ 70')
+]
+};
+}
+}
+</script>
+</body>
+</html>

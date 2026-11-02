@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Paa Jim · Home</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}a{color:#C1121F}a:hover{color:#8E0D17}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #FFFFFF; color: #1A1A1A; overflow: hidden; display: flex; flex-direction: column; position: relative">
+<div style="padding: 52px 20px 0; display: flex; align-items: center; gap: 12px">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: #FDECEC; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C1121F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg></span>
+<div style="flex: 1; display: flex; flex-direction: column">
+<span style="font-size: 12px; color: #5B5B5B; font-weight: 500">Deliver to · Home</span>
+<span style="font-size: 15px; font-weight: 700">AK-485-9302 ▾</span>
+</div>
+<button aria-label="Notifications" style="width: 44px; height: 44px; border: 0; border-radius: 14px; background: #F7F4F2; display: flex; align-items: center; justify-content: center; position: relative"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span style="position: absolute; top: 10px; right: 11px; width: 8px; height: 8px; border-radius: 50%; background: #C1121F"></span></button>
+</div>
+<a href="Search.dc.html" style="margin: 16px 20px 0; height: 50px; border-radius: 14px; background: #F7F4F2; display: flex; align-items: center; gap: 10px; padding: 0 16px; text-decoration: none; color: #5B5B5B; font-size: 14px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5B5B5B" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search jollof, fried rice, drinks…</a>
+<div style="margin: 14px 20px 0; display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700">
+<span style="height: 28px; padding: 0 10px; border-radius: 14px; background: #E8F5EC; color: #146C2E; display: flex; align-items: center; gap: 6px"><span style="width: 7px; height: 7px; border-radius: 50%; background: #1E8E3E"></span>Kitchen open · till 10 PM</span>
+<span style="height: 28px; padding: 0 10px; border-radius: 14px; background: #F7F4F2; display: flex; align-items: center">25–35 min</span>
+</div>
+<div style="margin: 16px 20px 0; height: 150px; border-radius: 22px; background: #C1121F; color: #FFFFFF; position: relative; overflow: hidden; display: flex">
+<div style="padding: 20px; display: flex; flex-direction: column; gap: 6px; width: 190px; position: relative">
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85">Today’s special</span>
+<span style="font-size: 20px; font-weight: 800; line-height: 1.2">Assorted jollof + a cold can drink</span>
+<a href="ItemDetail.dc.html" style="margin-top: auto; align-self: flex-start; height: 34px; padding: 0 14px; border-radius: 17px; background: #FFFFFF; color: #C1121F; text-decoration: none; display: flex; align-items: center; font-size: 13px; font-weight: 700">Order now</a>
+</div>
+<div style="position: absolute; right: -24px; top: 12px; width: 170px; height: 170px; border-radius: 50%; background: #F3D3C2; border: 6px solid rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #6B2A12; text-align: center">[Photo:<br>jollof plate]</div>
+</div>
+<div style="margin: 20px 20px 10px; display: flex; justify-content: space-between; align-items: baseline">
+<h2 style="margin: 0; font-size: 18px; font-weight: 800">Categories</h2>
+<a href="Menu.dc.html" style="font-size: 13px; font-weight: 700; text-decoration: none">See all</a>
+</div>
+<div style="padding: 0 20px; display: flex; gap: 8px">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="5">
+<a href="Menu.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; color: #1A1A1A">
+<span style="width: 60px; height: 60px; border-radius: 18px; background: {{c.bg}}; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #5B3A2A">{{c.icon}}</span>
+<span style="font-size: 12px; font-weight: 600">{{c.name}}</span>
+</a>
+</sc-for>
+</div>
+<div style="margin: 20px 20px 10px; display: flex; justify-content: space-between; align-items: baseline">
+<h2 style="margin: 0; font-size: 18px; font-weight: 800">Popular right now</h2>
+<a href="Menu.dc.html" style="font-size: 13px; font-weight: 700; text-decoration: none">See all</a>
+</div>
+<div style="padding: 0 20px; display: flex; gap: 12px; overflow: hidden">
+<sc-for list="{{items}}" as="it" hint-placeholder-count="3">
+<a href="ItemDetail.dc.html" style="width: 150px; flex-shrink: 0; border-radius: 18px; background: #FFFFFF; border: 1px solid #ECE7E4; overflow: hidden; text-decoration: none; color: #1A1A1A; display: flex; flex-direction: column">
+<span style="height: 96px; background: {{it.bg}}; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #5B3A2A">[Photo]</span>
+<span style="padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 14px; font-weight: 700">{{it.name}}</span>
+<span style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 14px; font-weight: 800; color: #C1121F">{{it.price}}</span><span style="width: 28px; height: 28px; border-radius: 9px; background: #C1121F; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600">+</span></span>
+</span>
+</a>
+</sc-for>
+</div>
+<a href="Cart.dc.html" style="position: absolute; left: 20px; right: 20px; bottom: 98px; height: 54px; border-radius: 16px; background: #1A1A1A; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; padding: 0 16px; gap: 12px; box-shadow: 0 10px 24px rgba(0,0,0,0.2)">
+<span style="width: 28px; height: 28px; border-radius: 8px; background: #C1121F; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800">3</span>
+<span style="flex: 1; font-size: 15px; font-weight: 700">View cart</span>
+<span style="font-size: 15px; font-weight: 800">GH₵ 135.00</span>
+</a>
+<nav style="margin-top: auto; height: 82px; border-top: 1px solid #ECE7E4; background: #FFFFFF; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding-bottom: 14px; box-sizing: border-box">
+<a href="Home.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #C1121F; font-size: 11px; font-weight: 700"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="#C1121F" stroke="#C1121F" stroke-width="2" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Home</a>
+<a href="Menu.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B5B5B; font-size: 11px; font-weight: 600"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B5B5B" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Menu</a>
+<a href="Orders.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B5B5B; font-size: 11px; font-weight: 600"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B5B5B" stroke-width="2" stroke-linejoin="round"><path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg>Orders</a>
+<a href="Profile.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #5B5B5B; font-size: 11px; font-weight: 600"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B5B5B" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Account</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {
+cats: [
+{ name: 'Jollof', icon: 'JOLLOF', bg: '#F9DCCB' },
+{ name: 'Fried rice', icon: 'FRIED', bg: '#F6E5C2' },
+{ name: 'Water', icon: 'WATER', bg: '#DCEBF5' },
+{ name: 'Cans', icon: 'CANS', bg: '#F3D0DA' },
+{ name: 'Glass', icon: 'GLASS', bg: '#E3EAD5' }
+],
+items: [
+{ name: 'Jollof & Chicken', price: 'GH₵ 55', bg: '#F9DCCB' },
+{ name: 'Assorted Fried Rice', price: 'GH₵ 70', bg: '#F6E5C2' },
+{ name: 'Assorted Jollof', price: 'GH₵ 70', bg: '#F7D5B8' }
+]
+};
+}
+}
+</script>
+</body>
+</html>
