@@ -1,0 +1,36 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: API tests
+        run: npm test -w api
+      - name: Database tests (PGlite + PostGIS)
+        run: |
+          mkdir -p /tmp/pg && cd /tmp/pg && npm init -y >/dev/null && npm i @electric-sql/pglite @electric-sql/pglite-postgis
+          cd $GITHUB_WORKSPACE && PGLITE_DIR=/tmp/pg/node_modules node supabase/tests/run-pglite.mjs
+
+  migrate-staging:
+    # Forward-only migrations to STAGING on merge. Production stays manual until the pipeline is trusted.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: check
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+      - run: supabase link --project-ref ${{ secrets.STAGING_PROJECT_REF }}
+      - run: supabase db push
