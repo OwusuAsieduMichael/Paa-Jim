@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/Text';
 import { Icon } from '@/components/Icon';
 import { BackButton, Banner, Button, Empty, PhotoTile } from '@/components/ui';
+import { photoFor } from '@/lib/menuImages';
 import { color } from '@/theme';
 import { ghs, times, toPesewas } from '@/lib/money';
 import { useKitchen, useMenu } from '@/hooks/data';
@@ -45,7 +46,7 @@ export default function Cart() {
             <View style={{ paddingTop: 10, paddingHorizontal: 20 }}>
               {lines.map((l) => (
                 <View key={l.key} style={{ flexDirection: 'row', gap: 12, alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: color.divider }}>
-                  <PhotoTile tint={l.tint} style={{ width: 72, height: 72, borderRadius: 16 }} />
+                  <PhotoTile tint={l.tint} photo={photoFor(l)} style={{ width: 72, height: 72, borderRadius: 16 }} />
                   <View style={{ flex: 1, gap: 3 }}>
                     <Text size={15} weight={700}>{l.name}</Text>
                     {l.note ? <Text size={12} tone={color.inkMuted}>{l.note}</Text> : null}

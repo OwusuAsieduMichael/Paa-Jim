@@ -18,13 +18,15 @@ npm install
 npm run mobile          # scan the QR code with Expo Go
 ```
 
-With no Supabase keys configured, the app runs on an in-memory demo backend. Any 6-digit code signs you in, and the phone number you enter picks the role:
+With no Supabase keys configured, the app runs on an in-memory demo backend, and any 6-digit code works. There are no passwords: **Create account** takes a name and phone number, and **I already have an account** logs in with just the phone number. These numbers already have accounts:
 
 | Number | Role |
 |---|---|
+| `24 000 0001` | Customer (Ama Mensah) |
 | `24 000 0002` | Vendor (kitchen tablet) |
 | `24 000 0003` | Rider |
-| any other | Customer |
+
+Logging in with any other number shows "No account with this number". Create an account first. Demo accounts reset when the app reloads.
 
 In demo mode a customer's order moves through the kitchen and rider stages on timers, so you can watch live tracking. The vendor and rider accounts have sample orders to work. Pickup ID `284615` is ready to claim.
 

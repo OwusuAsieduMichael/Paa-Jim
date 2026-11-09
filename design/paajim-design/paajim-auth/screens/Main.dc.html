@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Paa Jim · Splash</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}a{color:#C1121F}a:hover{color:#8E0D17}</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: {{brand}}; color: #FFFFFF; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px">
+<svg aria-hidden="true" width="520" height="520" viewBox="0 0 520 520" style="position: absolute; top: -120px; right: -220px; opacity: 0.12" fill="none" stroke="#FFFFFF" stroke-width="2"><circle cx="260" cy="260" r="250"/><circle cx="260" cy="260" r="180"/><circle cx="260" cy="260" r="110"/></svg>
+<svg aria-hidden="true" width="360" height="360" viewBox="0 0 360 360" style="position: absolute; bottom: -140px; left: -150px; opacity: 0.12" fill="none" stroke="#FFFFFF" stroke-width="2"><circle cx="180" cy="180" r="170"/><circle cx="180" cy="180" r="110"/></svg>
+<div style="width: 96px; height: 96px; border-radius: 28px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 12px 30px rgba(0,0,0,0.18)">
+<svg role="img" aria-label="Paa Jim logo" width="56" height="56" viewBox="0 0 48 48" fill="none" stroke="#C1121F" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 24h36a18 18 0 0 1-36 0z"/><path d="M16 17c0-3 3-3 3-6M24 17c0-3 3-3 3-6M32 17c0-3 3-3 3-6"/></svg>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px">
+<h1 style="margin: 0; font-size: 40px; font-weight: 800; letter-spacing: -0.02em">Paa Jim</h1>
+<p style="margin: 0; font-size: 15px; font-weight: 500; opacity: 0.92">Hot local meals, at your door</p>
+</div>
+<a href="Onboarding.dc.html" style="position: absolute; bottom: 64px; display: flex; flex-direction: column; align-items: center; gap: 10px; color: #FFFFFF; text-decoration: none; font-size: 13px; font-weight: 600">
+<span style="display: flex; gap: 6px"><span style="width: 22px; height: 6px; border-radius: 3px; background: #FFFFFF"></span><span style="width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.5)"></span><span style="width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.5)"></span></span>
+Tap to start
+</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"brand":{"editor":"color","default":"#C1121F","options":["#C1121F","#D62828","#B3001B","#E63946"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return { brand: this.props.brand ?? '#C1121F' };
+}
+}
+</script>
+</body>
+</html>

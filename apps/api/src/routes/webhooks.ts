@@ -45,8 +45,10 @@ export async function webhookRoutes(app: FastifyInstance, ctx: Ctx) {
   app.post('/hooks/send-sms', { config: { rateLimit: { max: 30, timeWindow: '1 minute' } } }, async (req: RawReq, reply) => {
     if (!env.SEND_SMS_HOOK_SECRET) return reply.code(503).send({ error: 'hook not configured' });
     if (!verifyStandardWebhook(req, env.SEND_SMS_HOOK_SECRET)) return reply.code(401).send();
-    const body = req.body as { user?: { phone?: string }; sms?: { otp?: string } };
-    const phone = body.user?.phone;
+    const body = req.body as { user?: { phone?: string; new_phone?: string }; sms?: { otp?: string; phone?: string }; new_phone?: string };
+    // A phone change must text the NEW number. Supabase's hook schema doesn't document
+    // where that is; `new_phone` is the only name its docs use, so prefer it if present.
+    const phone = body.new_phone || body.user?.new_phone || body.sms?.phone || body.user?.phone;
     const otp = body.sms?.otp;
     if (!phone || !otp) return reply.code(400).send({ error: 'missing phone or otp' });
     if (!phone.replace(/\D/g, '').startsWith('233')) return reply.code(400).send({ error: 'Ghana (+233) numbers only' });

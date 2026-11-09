@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Text } from './Text';
 import { Icon } from './Icon';
+import { VendorAccountButton } from './VendorAccount';
 import { color } from '@/theme';
 
 /** Dark vendor header (queue, overview). */
@@ -21,6 +22,7 @@ export function VendorHeader({ eyebrow, title, right, children }: { eyebrow: str
           <Text size={17} weight={800} tone="#FFFFFF" accessibilityRole="header">{title}</Text>
         </View>
         {right}
+        <VendorAccountButton />
       </View>
       {children}
     </View>

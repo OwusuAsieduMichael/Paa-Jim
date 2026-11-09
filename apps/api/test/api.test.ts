@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createHmac } from 'node:crypto';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { buildApp } from '../src/server.js';
@@ -6,6 +6,7 @@ import { loadEnv } from '../src/env.js';
 import { Paystack, toLocalGhanaPhone } from '../src/lib/paystack.js';
 import type { Jobs } from '../src/jobs.js';
 import { fakeDb } from './fake-db.js';
+import { Notifier } from '../src/lib/notify.js';
 
 const SECRET = 'sk_test_unit_secret_key_0123456789';
 const env = loadEnv({
@@ -136,5 +137,56 @@ describe('admin routes', () => {
     const t = await setup();
     const r = await t.app.inject({ method: 'POST', url: '/admin/vendor/suspend', payload: { suspended: true, reason: 'testing the guard' }, headers: { authorization: 'Bearer token-ama' } });
     expect(r.statusCode).toBe(403);
+  });
+});
+
+describe('POST /hooks/send-sms (Supabase Send SMS hook)', () => {
+  const HOOK_SECRET = 'v1,whsec_' + Buffer.from('unit-test-hook-secret-32-bytes!!').toString('base64');
+  const hookEnv = { ...env, SEND_SMS_HOOK_SECRET: HOOK_SECRET };
+
+  async function hookApp() {
+    const db = fakeDb(seed(), {});
+    const { app } = await buildApp({ env: hookEnv, db: db as unknown as SupabaseClient, paystack: new FakePaystack(), jobs: recordingJobs().jobs, logger: false });
+    return app;
+  }
+  function signed(body: string, secret = HOOK_SECRET) {
+    const id = 'msg_test_1';
+    const ts = String(Math.floor(Date.now() / 1000));
+    const key = Buffer.from(secret.replace(/^v1,/, '').replace(/^whsec_/, ''), 'base64');
+    const sig = createHmac('sha256', key).update(`${id}.${ts}.${body}`).digest('base64');
+    return { 'content-type': 'application/json', 'webhook-id': id, 'webhook-timestamp': ts, 'webhook-signature': `v1,${sig}` };
+  }
+
+  it('rejects an unsigned or wrongly signed request', async () => {
+    const app = await hookApp();
+    const body = JSON.stringify({ user: { phone: '233241234567' }, sms: { otp: '123456' } });
+    expect((await app.inject({ method: 'POST', url: '/hooks/send-sms', payload: body, headers: { 'content-type': 'application/json' } })).statusCode).toBe(401);
+    const wrong = 'v1,whsec_' + Buffer.from('a-different-secret-entirely-xxxx').toString('base64');
+    expect((await app.inject({ method: 'POST', url: '/hooks/send-sms', payload: body, headers: signed(body, wrong) })).statusCode).toBe(401);
+  });
+
+  it('texts the code to the user, with the design wording', async () => {
+    const spy = vi.spyOn(Notifier.prototype, 'sms').mockResolvedValue();
+    const app = await hookApp();
+    const body = JSON.stringify({ user: { phone: '233241234567' }, sms: { otp: '482913' } });
+    const r = await app.inject({ method: 'POST', url: '/hooks/send-sms', payload: body, headers: signed(body) });
+    expect(r.statusCode).toBe(200);
+    expect(spy).toHaveBeenCalledWith('233241234567', "Your Paa Jim code is 482913. It expires in 5 minutes. Don't share it.");
+    spy.mockRestore();
+  });
+
+  it('sends a phone-change code to the NEW number', async () => {
+    const spy = vi.spyOn(Notifier.prototype, 'sms').mockResolvedValue();
+    const app = await hookApp();
+    const body = JSON.stringify({ user: { phone: '233241234567', new_phone: '233559876543' }, sms: { otp: '111222' } });
+    await app.inject({ method: 'POST', url: '/hooks/send-sms', payload: body, headers: signed(body) });
+    expect(spy).toHaveBeenCalledWith('233559876543', expect.any(String));
+    spy.mockRestore();
+  });
+
+  it('refuses non-Ghana numbers', async () => {
+    const app = await hookApp();
+    const body = JSON.stringify({ user: { phone: '14155550100' }, sms: { otp: '123456' } });
+    expect((await app.inject({ method: 'POST', url: '/hooks/send-sms', payload: body, headers: signed(body) })).statusCode).toBe(400);
   });
 });

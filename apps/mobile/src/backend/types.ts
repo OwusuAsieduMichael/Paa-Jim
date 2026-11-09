@@ -17,7 +17,12 @@ export interface User {
   role: Role;
   phone: string | null;
   fullName: string | null;
+  /** Profile photo (public URL), if they added one. */
+  avatarUrl?: string | null;
 }
+
+/** A saved mobile-money number (never a PIN). */
+export interface Wallet { id: string; network: Network; phone: string; label: string | null; isDefault: boolean }
 
 export interface KitchenStatus {
   accepting: boolean;
@@ -57,6 +62,8 @@ export interface Address {
   isDefault: boolean;
 }
 
+export type AuthIntent = { mode: 'signup'; fullName: string } | { mode: 'login' };
+
 export interface DeliveryQuote { distanceKm: number; deliverable: boolean; fee: string | null; band: string | null }
 
 export interface CartLine { menuItemId: string; qty: number; note?: string }
@@ -81,9 +88,11 @@ export interface Order {
   customerId: string;
   customerName: string | null;
   customerPhone: string | null;
+  customerAvatarUrl?: string | null;
   riderId: string | null;
   riderName: string | null;
   riderPhone: string | null;
+  riderAvatarUrl?: string | null;
   momoNetwork: Network | null;
   momoLast4: string | null;
   rejectReason: string | null;
@@ -139,12 +148,23 @@ export interface Backend {
   readonly demo: boolean;
   // auth
   currentUser(): Promise<User | null>;
-  sendOtp(e164: string): Promise<void>;
+  /**
+   * Text a 6-digit code. 'signup' creates the account (customer) and stores the name;
+   * 'login' never creates one and throws BackendError code 'no_account' for unknown numbers.
+   */
+  sendOtp(e164: string, intent: AuthIntent): Promise<void>;
   verifyOtp(e164: string, code: string): Promise<User>;
+  /** Signed-in user: text a code to the new number. Nothing changes until it's confirmed. */
+  requestPhoneChange(newE164: string): Promise<void>;
+  confirmPhoneChange(newE164: string, code: string): Promise<User>;
   signOut(): Promise<void>;
   updateName(fullName: string): Promise<void>;
+  /** Upload a photo (local file URI, already resized) as the profile picture, or remove it with null. */
+  setAvatar(localUri: string | null): Promise<User>;
   onAuthChange(cb: (u: User | null) => void): Unsubscribe;
   registerPushToken(token: string, platform: 'android' | 'ios'): Promise<void>;
+  /** Stop pushes to this device for the signed-in user (call before signing out). */
+  unregisterPushToken(token: string): Promise<void>;
   // catalogue
   kitchenStatus(): Promise<KitchenStatus>;
   menu(): Promise<{ categories: Category[]; items: MenuItem[] }>;
@@ -152,6 +172,9 @@ export interface Backend {
   // addresses
   addresses(): Promise<Address[]>;
   saveAddress(a: Omit<Address, 'id'> & { id?: string }): Promise<Address>;
+  wallets(): Promise<Wallet[]>;
+  saveWallet(w: { id?: string; network: Network; phone: string; label?: string | null; isDefault?: boolean }): Promise<Wallet>;
+  deleteWallet(id: string): Promise<void>;
   quoteDelivery(addressId: string): Promise<DeliveryQuote>;
   // customer orders
   createOrder(input: { orderId: string; addressId: string; lines: CartLine[]; riderNote?: string }): Promise<Order>;

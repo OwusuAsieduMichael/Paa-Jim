@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Image, Pressable, ScrollView, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/Text';
 import { Icon } from '@/components/Icon';
 import { BackButton, Button, IconButton, Loading, PhotoTile, Pill } from '@/components/ui';
+import { photoFor } from '@/lib/menuImages';
 import { color } from '@/theme';
 import { add as addMoney, ghs, times, toPesewas } from '@/lib/money';
 import { useMenu } from '@/hooks/data';
@@ -23,6 +24,7 @@ export default function ItemDetail() {
   if (!item) return <Loading />;
 
   const isFood = item.categoryId !== 3;
+  const photo = photoFor(item);
   const drinks = (menu.data?.items ?? []).filter((i) => i.categoryId === 3 && i.isAvailable).slice(0, 4);
   const extraTotal = addMoney(...drinks.filter((d) => extras[d.id]).map((d) => toPesewas(d.price)));
   const total = times(addMoney(toPesewas(item.price), extraTotal), qty);
@@ -36,8 +38,26 @@ export default function ItemDetail() {
   return (
     <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
-        <View style={{ height: 330, backgroundColor: color.primaryTint, alignItems: 'center', justifyContent: 'center' }}>
-          <PhotoTile tint={item.tint} label={`[Photo: ${item.name}]`} style={{ width: 230, height: 230, borderRadius: 115, shadowColor: color.primary, shadowOpacity: 0.18, shadowRadius: 18, shadowOffset: { width: 0, height: 18 }, elevation: 10 }} />
+        {!isFood && photo ? (
+          // Drinks: the photo fills the whole top area, its own backdrop edge to edge.
+          // Bottles/cans on plain white are shown whole on white, clear of the buttons.
+          <View style={{ height: 380, backgroundColor: photo.fit === 'contain' ? '#FFFFFF' : item.tint, overflow: 'hidden' }}>
+            <Image
+              source={photo.source}
+              resizeMode={photo.fit}
+              accessibilityLabel={item.name}
+              style={photo.fit === 'contain'
+                ? { position: 'absolute', top: insets.top + 60, bottom: 20, left: 0, right: 0, width: '100%' }
+                : { width: '100%', height: '100%' }}
+            />
+          </View>
+        ) : (
+          <View style={{ height: 330, backgroundColor: color.primaryTint, alignItems: 'center', justifyContent: 'center' }}>
+            <PhotoTile tint={item.tint} label={`[Photo: ${item.name}]`} photo={photo} style={{ width: 230, height: 230, borderRadius: 115, shadowColor: color.primary, shadowOpacity: 0.18, shadowRadius: 18, shadowOffset: { width: 0, height: 18 }, elevation: 10 }} />
+          </View>
+        )}
+        {/* Sized wrapper: on Android, buttons outside their parent's box can't be tapped */}
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: insets.top + 60 }}>
           <View style={{ position: 'absolute', top: insets.top + 8, left: 20, right: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
             <BackButton bg="#FFFFFF" />
             <IconButton icon="heart" label="Save to favourites" bg="#FFFFFF" fg={color.primary} />
@@ -83,7 +103,7 @@ export default function ItemDetail() {
                     accessibilityState={{ checked: on }}
                     style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: color.divider }}
                   >
-                    <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: d.tint }} />
+                    <PhotoTile tint={d.tint} label="" photo={photoFor(d)} style={{ width: 40, height: 40, borderRadius: 10 }} />
                     <Text size={14} weight={600} style={{ flex: 1 }}>{d.name}</Text>
                     <Text size={14} weight={600} tone={color.inkMuted}>+{ghs(d.price, { short: true })}</Text>
                     <View style={{ width: 22, height: 22, borderRadius: 6, borderWidth: 2, borderColor: on ? color.primary : color.ringIdle, backgroundColor: on ? color.primary : '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>

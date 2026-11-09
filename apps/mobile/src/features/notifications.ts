@@ -50,6 +50,17 @@ export async function registerForPush(): Promise<void> {
   }
 }
 
+/** Unlink this device from the account, so a signed-out phone or tablet stops getting its order alerts. */
+export async function unregisterPush(): Promise<void> {
+  if (!Device.isDevice || backend.demo) return;
+  try {
+    const token = await Notifications.getDevicePushTokenAsync();
+    await backend.unregisterPushToken(String(token.data));
+  } catch {
+    // No token on this device (e.g. Expo Go on Android): nothing to unlink.
+  }
+}
+
 /** Tap on a notification → open the relevant screen for this role. */
 export function routeNotifications(role: Role | undefined) {
   const sub = Notifications.addNotificationResponseReceivedListener((r) => {

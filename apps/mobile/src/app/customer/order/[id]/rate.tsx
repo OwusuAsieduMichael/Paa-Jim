@@ -8,7 +8,7 @@ import { Icon } from '@/components/Icon';
 import { Banner, Button, Loading } from '@/components/ui';
 import { color, font } from '@/theme';
 import { clock } from '@/lib/format';
-import { initials } from '@/lib/phone';
+import { Avatar } from '@/components/Avatar';
 import { useOrder } from '@/hooks/data';
 import { backend } from '@/backend';
 
@@ -86,9 +86,7 @@ export default function Rate() {
 
           {o.riderName && (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 16, backgroundColor: color.canvas }}>
-              <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#E7DCCB', alignItems: 'center', justifyContent: 'center' }}>
-                <Text size={14} weight={800} tone={color.photoText}>{initials(o.riderName)}</Text>
-              </View>
+              <Avatar url={o.riderAvatarUrl} name={o.riderName} size={44} bg="#E7DCCB" fg={color.photoText} />
               <View style={{ flex: 1 }}>
                 <Text size={14} weight={700}>Rate {riderFirst}, your rider</Text>
                 <Text size={12} tone={color.inkMuted}>Polite and on time?</Text>

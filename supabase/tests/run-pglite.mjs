@@ -83,15 +83,17 @@ for (const f of readdirSync(migDir).filter((f) => f.endsWith('.sql')).sort()) {
   try { await db.exec(readFileSync(join(migDir, f), 'utf8')); console.log(`  ✓ ${f}`); }
   catch (e) { console.log(`  ✗ ${f}: ${e.message}`); process.exit(1); }
 }
-try { await db.exec(readFileSync(join(root, 'seed.sql'), 'utf8')); console.log('  ✓ seed.sql'); }
-catch (e) { console.log(`  ✗ seed.sql: ${e.message}`); process.exit(1); }
+for (const f of ['catalogue.sql', 'seed.sql']) {
+  try { await db.exec(readFileSync(join(root, f), 'utf8')); console.log(`  ✓ ${f}`); }
+  catch (e) { console.log(`  ✗ ${f}: ${e.message}`); process.exit(1); }
+}
 
 // The kitchen must be "open" regardless of when tests run.
 await sys(`update public.vendor_hours set opens = '00:00', closes = '23:59:59'`);
 
 console.log('\nCatalogue & capacity');
 const menu = await as('anon', 'select id, name, price, is_available from public.menu_items order by name');
-ok('anon can read the menu (13 items)', menu.rows.length === 13);
+ok('anon can read the menu (17 items)', menu.rows.length === 17);
 const ks = await rpc('anon', 'kitchen_status', {});
 ok('kitchen_status says accepting', ks.accepting === true, JSON.stringify(ks));
 const item = (n) => menu.rows.find((r) => r.name === n).id;
@@ -99,21 +101,22 @@ const item = (n) => menu.rows.find((r) => r.name === n).id;
 console.log('\nCustomer places an order');
 const addr = (await as('customer', 'select id from public.addresses')).rows[0].id;
 const quote = await rpc('customer', 'quote_delivery', { p_address_id: addr });
-ok('delivery quote is in the 2–4 km band at GH₵15', quote.fee === 15 || quote.fee === '15.00' || Number(quote.fee) === 15, JSON.stringify(quote));
+ok('delivery quote is in the 2–5 km band at GH₵5', Number(quote.fee) === 5 && quote.band === '2.00–5.00 km', JSON.stringify(quote));
 const orderId = randomUUID();
 const items = JSON.stringify([
   { menu_item_id: item('Jollof & Chicken'), qty: 1, note: 'Extra shito' },
   { menu_item_id: item('Assorted Fried Rice'), qty: 1 },
-  { menu_item_id: item('Soft drink · can'), qty: 1 },
+  { menu_item_id: item('Fanta · can'), qty: 1 },
 ]);
 const created = await rpc('customer', 'create_order', { p_order_id: orderId, p_address_id: addr, p_items: items, p_rider_note: 'Call at the junction' });
-ok('server computes subtotal 135.00', created.subtotal === '135.00', created.subtotal);
-ok('server computes total 150.00', created.total === '150.00', created.total);
+ok('server computes subtotal 117.00', created.subtotal === '117.00', created.subtotal);
+ok('server computes total 122.00 (GH₵5 delivery)', created.total === '122.00', created.total);
 ok('order number assigned', /^PJ-\d+$/.test(created.order_no), created.order_no);
 const again = await rpc('customer', 'create_order', { p_order_id: orderId, p_address_id: addr, p_items: '[]' });
 ok('create_order is idempotent on the client uuid', again.order_no === created.order_no);
+await sys(`update public.menu_items set is_available = false where name = 'Malta Guinness · can'`);
 await throwsLike('sold-out item is refused', () => rpc('customer', 'create_order', {
-  p_order_id: randomUUID(), p_address_id: addr, p_items: JSON.stringify([{ menu_item_id: item('Malt · glass bottle'), qty: 1 }]) }), /sold out/);
+  p_order_id: randomUUID(), p_address_id: addr, p_items: JSON.stringify([{ menu_item_id: item('Malta Guinness · can'), qty: 1 }]) }), /sold out/);
 await throwsLike('vendor cannot place orders', () => rpc('vendor', 'create_order', {
   p_order_id: randomUUID(), p_address_id: addr, p_items: items }), /only customers|address/);
 const code = (await as('customer', 'select code from public.order_delivery_codes where order_id = $1', [orderId])).rows[0]?.code;
@@ -134,7 +137,7 @@ ok('vendor CAN toggle stock', stockUpd.rows.length === 1);
 await as('vendor', `update public.menu_items set is_available = true where id = $1`, [item('Bottled Water 1.5L')]);
 
 console.log('\nPayment (Node, service role)');
-await sys(`insert into public.payments (order_id, reference, network, phone, amount, status) values ($1, 'ref-1', 'mtn', '+233240000001', 150, 'success')`, [orderId]);
+await sys(`insert into public.payments (order_id, reference, network, phone, amount, status) values ($1, 'ref-1', 'mtn', '+233240000001', 122, 'success')`, [orderId]);
 await sys(`update public.orders set status = 'paid', momo_network = 'mtn', momo_last4 = '0001' where id = $1`, [orderId]);
 ok('vendor now sees the paid order', (await as('vendor', 'select 1 from public.orders where id = $1', [orderId])).rows.length === 1);
 
@@ -186,11 +189,11 @@ ok('customer rated delivered order', (await sys('select food_stars from public.r
 console.log('\nRefund on reject + verify lockout');
 const o2 = randomUUID();
 await rpc('customer', 'create_order', { p_order_id: o2, p_address_id: addr, p_items: JSON.stringify([{ menu_item_id: item('Jollof & Beef'), qty: 2 }]) });
-await sys(`insert into public.payments (order_id, reference, network, phone, amount, status) values ($1, 'ref-2', 'vod', '+233240000001', 115, 'success')`, [o2]);
+await sys(`insert into public.payments (order_id, reference, network, phone, amount, status) values ($1, 'ref-2', 'vod', '+233240000001', 75, 'success')`, [o2]);
 await sys(`update public.orders set status = 'paid' where id = $1`, [o2]);
 await as('vendor', `update public.orders set status = 'rejected', reject_reason = 'Out of beef' where id = $1`, [o2]);
 const rf = (await sys('select amount, status, reason from public.refunds where order_id = $1', [o2])).rows[0];
-ok('rejecting a paid order queues a refund for the full amount', rf && Number(rf.amount) === 115 && rf.status === 'pending', JSON.stringify(rf));
+ok('rejecting a paid order queues a refund for the full amount', rf && Number(rf.amount) === 75 && rf.status === 'pending', JSON.stringify(rf));
 
 const o3 = randomUUID();
 await rpc('customer', 'create_order', { p_order_id: o3, p_address_id: addr, p_items: JSON.stringify([{ menu_item_id: item('Jollof & Beef'), qty: 1 }]) });
@@ -222,6 +225,61 @@ const ov = await rpc('vendor', 'vendor_overview', { p_range: 'today' });
 ok('vendor_overview returns KPIs', ov && Number(ov.orders) >= 3 && Array.isArray(ov.top), JSON.stringify(ov).slice(0, 200));
 const transitions = (await sys('select count(*)::int n from public.order_transitions')).rows[0].n;
 ok('order_transitions has 20 rows', transitions === 20, String(transitions));
+
+console.log('\nDelivery bands (Effiduase)');
+const addAddr = async (gps, lat) => (await as('customer',
+  `insert into public.addresses (user_id, label, gps_code, lat, lng) values (auth.uid(), 'Other', $1, $2, -1.3977) returning id`, [gps, lat])).rows[0].id;
+const near = await addAddr('AS-100-1000', 6.8516);   // ~1 km
+ok('under 2 km costs GH₵4', Number((await rpc('customer', 'quote_delivery', { p_address_id: near })).fee) === 4);
+const far = await addAddr('AS-200-2000', 6.9056);    // ~7 km
+ok('over 5 km costs GH₵7', Number((await rpc('customer', 'quote_delivery', { p_address_id: far })).fee) === 7);
+const tooFar = await addAddr('AS-300-3000', 6.9506); // ~12 km
+ok('over 10 km is not deliverable', (await rpc('customer', 'quote_delivery', { p_address_id: tooFar })).deliverable === false);
+await throwsLike('ordering to an address over 10 km is refused', () => rpc('customer', 'create_order', {
+  p_order_id: randomUUID(), p_address_id: tooFar, p_items: JSON.stringify([{ menu_item_id: item('Jollof & Beef'), qty: 1 }]) }), /outside our delivery area/);
+
+console.log('\nSign-up & phone change (0004)');
+const newId = randomUUID();
+await sys(`insert into auth.users (id, phone, raw_user_meta_data) values ($1, '233559876543', $2)`, [newId, JSON.stringify({ full_name: '  Efua Owusu  ' })]);
+const np = (await sys('select role, full_name, phone from public.profiles where id = $1', [newId])).rows[0];
+ok('sign-up copies the trimmed name into the profile', np?.full_name === 'Efua Owusu', JSON.stringify(np));
+ok('sign-up always makes a customer', np?.role === 'customer', JSON.stringify(np));
+await sys(`insert into auth.users (id, phone, raw_user_meta_data) values ($1, '233559876544', $2)`, [randomUUID(), JSON.stringify({ full_name: '   ' })]);
+ok('blank name is stored as null', (await sys(`select full_name from public.profiles p join auth.users u on u.id = p.id where u.phone = '233559876544'`)).rows[0].full_name === null);
+await sys(`update auth.users set phone = '233201112222' where id = $1`, [newId]);
+ok('confirmed phone change updates profiles.phone', (await sys('select phone from public.profiles where id = $1', [newId])).rows[0].phone === '233201112222');
+await throwsLike('customer cannot edit their own phone column', () => as('customer', `update public.profiles set phone = '233200000000' where id = $1`, [IDS.customer]), /permission denied/);
+await throwsLike('customer cannot make themselves admin', () => as('customer', `update public.profiles set role = 'admin' where id = $1`, [IDS.customer]), /permission denied/);
+ok('customer CAN edit their own name', (await as('customer', `update public.profiles set full_name = 'Ama M.' where id = $1 returning id`, [IDS.customer])).rows.length === 1);
+
+console.log('\nProfile photos (0006)');
+const photo = (uid) => `https://x.supabase.co/storage/v1/object/public/avatars/${uid}/abc.jpg`;
+ok('customer can set a photo in their own folder', (await as('customer', `update public.profiles set avatar_url = $2 where id = $1 returning id`, [IDS.customer, photo(IDS.customer)])).rows.length === 1);
+await throwsLike('a photo from someone else\'s folder is refused', () => as('customer', `update public.profiles set avatar_url = $2 where id = $1`, [IDS.customer, photo(IDS.rider)]), /uploaded from the app/);
+await throwsLike('an outside link is refused', () => as('customer', `update public.profiles set avatar_url = 'https://evil.example/x.jpg' where id = $1`, [IDS.customer]), /uploaded from the app/);
+const withPhotos = (await sys('select customer_avatar_url, rider_avatar_url from public.orders where id = $1', [orderId])).rows[0];
+ok('existing orders pick up the customer\'s new photo', withPhotos.customer_avatar_url === photo(IDS.customer), JSON.stringify(withPhotos));
+await as('rider', `update public.profiles set avatar_url = $2 where id = $1`, [IDS.rider, photo(IDS.rider)]);
+ok('the rider\'s photo shows on the orders they carried', (await sys('select rider_avatar_url from public.orders where id = $1', [orderId])).rows[0].rider_avatar_url === photo(IDS.rider));
+const o6 = randomUUID();
+await rpc('customer', 'create_order', { p_order_id: o6, p_address_id: addr, p_items: JSON.stringify([{ menu_item_id: item('Jollof & Beef'), qty: 1 }]) });
+ok('a new order copies the customer\'s photo', (await sys('select customer_avatar_url from public.orders where id = $1', [o6])).rows[0].customer_avatar_url === photo(IDS.customer));
+ok('customer can remove their photo', (await as('customer', `update public.profiles set avatar_url = null where id = $1 returning id`, [IDS.customer])).rows.length === 1);
+
+console.log('\nSaved MoMo wallets (0007)');
+const w1 = (await as('customer', `insert into public.momo_wallets (network, phone) values ('mtn', '233559776547') returning id, is_default`)).rows[0];
+ok('first wallet becomes the default', w1?.is_default === true, JSON.stringify(w1));
+const w2 = (await as('customer', `insert into public.momo_wallets (network, phone, label, is_default) values ('vod', '233201234567', 'Work', true) returning id`)).rows[0];
+const defs = (await as('customer', `select id from public.momo_wallets where is_default`)).rows;
+ok('choosing a new default clears the old one', defs.length === 1 && defs[0].id === w2.id, JSON.stringify(defs));
+await throwsLike('a badly formed number is refused', () => as('customer', `insert into public.momo_wallets (network, phone) values ('mtn', '0559776547')`), /check constraint/);
+await throwsLike('the same number twice is refused', () => as('customer', `insert into public.momo_wallets (network, phone) values ('mtn', '233559776547')`), /duplicate key|unique/);
+ok('other users cannot see my wallets', (await as('rider', `select id from public.momo_wallets`)).rows.length === 0);
+await throwsLike('cannot save a wallet onto someone else', () => as('rider', `insert into public.momo_wallets (user_id, network, phone) values ($1, 'mtn', '233541112222')`, [IDS.customer]), /row-level security/);
+await as('customer', `delete from public.momo_wallets where id = $1`, [w2.id]);
+ok('deleting the default promotes the remaining wallet', (await as('customer', `select is_default from public.momo_wallets where id = $1`, [w1.id])).rows[0].is_default === true);
+for (const n of ['233241000001', '233241000002', '233241000003', '233241000004']) await as('customer', `insert into public.momo_wallets (network, phone) values ('mtn', $1)`, [n]);
+await throwsLike('at most 5 wallets', () => as('customer', `insert into public.momo_wallets (network, phone) values ('mtn', '233241000005')`), /up to 5/);
 
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

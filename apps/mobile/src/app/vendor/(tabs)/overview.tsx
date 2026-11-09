@@ -4,10 +4,10 @@ import { Text } from '@/components/Text';
 import { Icon } from '@/components/Icon';
 import { Button, Card } from '@/components/ui';
 import { VendorHeader } from '@/components/VendorHeader';
+import { VendorAccountButton } from '@/components/VendorAccount';
 import { color } from '@/theme';
 import { ghs } from '@/lib/money';
 import { useKitchen, useLoad, useMenu } from '@/hooks/data';
-import { useSession } from '@/stores/session';
 import { backend } from '@/backend';
 
 type Range = 'today' | 'week';
@@ -26,7 +26,6 @@ export default function VendorOverview() {
   const ov = useLoad(() => backend.overview(range), [range], { refetchOnFocus: true });
   const kitchen = useKitchen();
   const menu = useMenu();
-  const signOut = useSession((s) => s.signOut);
   const day = range === 'today';
   const o = ov.data;
 
@@ -95,7 +94,7 @@ export default function VendorOverview() {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text size={10} tone={color.inkMuted}>{day ? '10 AM' : 'Mon'}</Text>
             <Text size={10} tone={color.inkMuted}>{day ? '4 PM' : 'Thu'}</Text>
-            <Text size={10} tone={color.inkMuted}>{day ? '10 PM' : 'Sun'}</Text>
+            <Text size={10} tone={color.inkMuted}>{day ? '7 PM' : 'Sun'}</Text>
           </View>
         </Card>
 
@@ -134,7 +133,7 @@ export default function VendorOverview() {
           ))}
         </Card>
 
-        <Button title="Sign out of this tablet" variant="ghost" height={44} size={13} onPress={() => Alert.alert('Sign out?', 'New orders will stop ringing on this tablet.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Sign out', style: 'destructive', onPress: () => void signOut() }])} />
+        <VendorAccountButton asButton />
       </ScrollView>
     </View>
   );

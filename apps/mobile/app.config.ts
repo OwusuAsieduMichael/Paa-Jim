@@ -47,6 +47,14 @@ const config: ExpoConfig = {
   },
   plugins: [
     'expo-router',
+    [
+      'expo-image-picker',
+      {
+        cameraPermission: 'Paa Jim uses the camera so you can take a profile photo. Riders and customers see it on an order.',
+        photosPermission: 'Paa Jim lets you choose a profile photo from your gallery.',
+        microphonePermission: false,
+      },
+    ],
     'expo-secure-store',
     'expo-font',
     [

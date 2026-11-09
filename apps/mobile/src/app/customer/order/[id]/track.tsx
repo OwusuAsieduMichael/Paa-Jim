@@ -2,15 +2,16 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Linking, ScrollView, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'react-native-maps';
 import Svg, { Circle, Path, G } from 'react-native-svg';
 import { Text } from '@/components/Text';
 import { BackButton, Banner, Button, IconButton, Loading } from '@/components/ui';
-import { Pin } from '@/components/MiniMap';
+import { MAP_PROVIDER, Pin } from '@/components/MiniMap';
 import { color, shadow } from '@/theme';
 import { clock } from '@/lib/format';
 import { etaMinutes, km, toLatLng, type LatLng } from '@/lib/geo';
-import { initials, firstNameInitial } from '@/lib/phone';
+import { prettyPhone } from '@/lib/phone';
+import { Avatar } from '@/components/Avatar';
 import { useLoad, useOrder } from '@/hooks/data';
 import { backend, type Order, type OrderStatus } from '@/backend';
 
@@ -96,7 +97,7 @@ export default function Track() {
   return (
     <View style={{ flex: 1, backgroundColor: color.map }}>
       {region && (
-        <MapView ref={map} provider={PROVIDER_GOOGLE} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '58%' }} initialRegion={region} toolbarEnabled={false}
+        <MapView ref={map} provider={MAP_PROVIDER} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '58%' }} initialRegion={region} toolbarEnabled={false}
           accessibilityLabel="Map showing the rider on the way from the kitchen to your home">
           {kitchen && (
             <Marker coordinate={toLatLng(kitchen)} anchor={{ x: 0.5, y: 0.5 }} tracksViewChanges={false} title="Paa Jim’s Kitchen">
@@ -142,12 +143,11 @@ export default function Track() {
 
           {o.riderName && live && (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderRadius: 16, backgroundColor: color.canvas }}>
-              <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#E7DCCB', alignItems: 'center', justifyContent: 'center' }}>
-                <Text size={14} weight={800} tone={color.photoText}>{initials(o.riderName)}</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text size={15} weight={700}>{firstNameInitial(o.riderName)}</Text>
-                <Text size={12} tone={color.inkMuted}>Paa Jim rider · {trk.data?.rider?.vehicle ?? 'Motorbike'}</Text>
+              <Avatar url={o.riderAvatarUrl} name={o.riderName} size={52} bg="#E7DCCB" fg={color.photoText} />
+              <View style={{ flex: 1, gap: 1 }}>
+                <Text size={15} weight={700} numberOfLines={1}>{o.riderName}</Text>
+                {o.riderPhone && <Text size={13} weight={600} tone={color.ink}>{prettyPhone(o.riderPhone)}</Text>}
+                <Text size={12} tone={color.inkMuted}>Your Paa Jim rider · {trk.data?.rider?.vehicle ?? 'Motorbike'}</Text>
               </View>
               {o.riderPhone && <IconButton icon="phone" label="Call rider" bg={color.primary} fg="#FFFFFF" onPress={() => Linking.openURL(`tel:+${o.riderPhone!.replace(/\D/g, '')}`)} />}
             </View>

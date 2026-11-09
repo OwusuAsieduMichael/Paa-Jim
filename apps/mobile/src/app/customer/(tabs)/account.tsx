@@ -4,8 +4,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/Text';
 import { Icon, type IconName } from '@/components/Icon';
 import { color } from '@/theme';
-import { initials, prettyPhone } from '@/lib/phone';
-import { LEGAL_URL, SUPPORT_PHONE } from '@/lib/config';
+import { Avatar } from '@/components/Avatar';
+import { LEGAL_URL } from '@/lib/config';
+import { netInfo } from '@/lib/momo';
 import { useLoad } from '@/hooks/data';
 import { useSession } from '@/stores/session';
 import { backend } from '@/backend';
@@ -16,15 +17,16 @@ export default function Account() {
   const { user, signOut } = useSession();
   const orders = useLoad(() => backend.myOrders(), [], { refetchOnFocus: true });
   const addresses = useLoad(() => backend.addresses(), [], { refetchOnFocus: true });
-  const last = orders.data?.find((o) => o.momoNetwork);
+  const wallets = useLoad(() => backend.wallets(), [], { refetchOnFocus: true });
+  const def = wallets.data?.find((w) => w.isDefault) ?? wallets.data?.[0];
 
   const rows: Array<{ label: string; meta?: string; icon: IconName; onPress: () => void }> = [
+    // Photo, name, phone number and delivery address all live in Edit profile.
     { label: 'Edit profile', icon: 'user', onPress: () => router.push('/profile-setup') },
-    { label: 'Saved addresses', meta: addresses.data?.map((a) => a.label).join(', '), icon: 'pin', onPress: () => router.push('/profile-setup?mode=address') },
-    { label: 'MoMo wallets', meta: last ? `${last.momoNetwork?.toUpperCase()} ··· ${last.momoLast4}` : undefined, icon: 'wallet', onPress: () => Alert.alert('MoMo wallets', 'You choose your network and number each time you pay. Paa Jim never stores your PIN.') },
+    { label: 'MoMo wallets', meta: def ? `${netInfo(def.network).short} ··· ${def.phone.slice(-4)}` : 'Add', icon: 'wallet', onPress: () => router.push('/customer/wallets') },
     { label: 'Notifications', meta: 'On', icon: 'bell', onPress: () => Linking.openSettings() },
     { label: 'Refund policy', icon: 'refresh', onPress: () => Alert.alert('Refund policy', 'If the kitchen can’t accept your order within 8 minutes, or rejects it, your full payment goes back to the same MoMo wallet automatically — usually within 24 hours.') },
-    { label: 'Help & contact', icon: 'help', onPress: () => Linking.openURL(`tel:${SUPPORT_PHONE}`) },
+    { label: 'Help & contact', icon: 'help', onPress: () => router.push('/customer/help') },
     { label: 'Privacy & terms', icon: 'shieldPlain', onPress: () => Linking.openURL(`${LEGAL_URL}/privacy`) },
   ];
 
@@ -43,11 +45,10 @@ export default function Account() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: '#FFFFFF' }} contentContainerStyle={{ paddingTop: insets.top + 24, paddingBottom: 24 }}>
       <View style={{ paddingHorizontal: 20, alignItems: 'center', gap: 8 }}>
-        <View style={{ width: 88, height: 88, borderRadius: 44, backgroundColor: color.primaryTint, borderWidth: 3, borderColor: color.primary, alignItems: 'center', justifyContent: 'center' }}>
-          <Text size={28} weight={800} tone={color.primary}>{initials(user?.fullName)}</Text>
-        </View>
+        <Pressable onPress={() => router.push('/profile-setup')} accessibilityRole="button" accessibilityLabel="Edit profile">
+          <Avatar url={user?.avatarUrl} name={user?.fullName} size={88} ring={color.primary} />
+        </Pressable>
         <Text size={22} weight={800} style={{ marginTop: 4 }}>{user?.fullName}</Text>
-        <Text size={14} tone={color.inkMuted}>{prettyPhone(user?.phone)}</Text>
       </View>
 
       <View style={{ marginTop: 18, marginHorizontal: 20, flexDirection: 'row', gap: 10 }}>

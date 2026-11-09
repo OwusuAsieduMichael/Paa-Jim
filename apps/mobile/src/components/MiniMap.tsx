@@ -1,7 +1,11 @@
-import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, View, type StyleProp, type ViewStyle } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE, type Region } from 'react-native-maps';
 import Svg, { Path, Circle } from 'react-native-svg';
 import { color } from '@/theme';
+
+// Google Maps on Android; Apple Maps on iPhone (Expo Go on iOS has no Google Maps,
+// and Apple Maps needs no API key).
+export const MAP_PROVIDER = Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined;
 
 export function Pin({ fill = color.primary, size = 36 }: { fill?: string; size?: number }) {
   return (
@@ -18,7 +22,7 @@ export function MiniMap({ lat, lng, style, onPress }: { lat: number; lng: number
   return (
     <View style={[{ borderRadius: 18, overflow: 'hidden', backgroundColor: color.map }, style]}>
       <MapView
-        provider={PROVIDER_GOOGLE}
+        provider={MAP_PROVIDER}
         style={{ flex: 1 }}
         region={region}
         toolbarEnabled={false}

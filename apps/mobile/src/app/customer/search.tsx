@@ -6,12 +6,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Text } from '@/components/Text';
 import { Icon } from '@/components/Icon';
 import { BackButton, PhotoTile } from '@/components/ui';
+import { photoFor } from '@/lib/menuImages';
 import { color, font } from '@/theme';
 import { ghs } from '@/lib/money';
 import { useLoad, useMenu } from '@/hooks/data';
 import { useCart } from '@/stores/cart';
 
-const TAGS = ['Jollof', 'Fried rice', 'Chicken', 'Beef', 'Fish', 'Assorted', 'Water', 'Cans', 'Glass bottles'];
+const TAGS = ['Jollof', 'Fried rice', 'Stew', 'Chicken', 'Fish', 'Assorted', 'Water', 'Coke', 'Malta'];
 const RECENT_KEY = 'paajim-recent-search';
 const SYN: Record<string, string> = { cans: 'can', 'glass bottles': 'glass', fish: 'fish' };
 
@@ -93,7 +94,7 @@ export default function Search() {
             ListEmptyComponent={<Text size={14} tone={color.inkMuted} style={{ paddingTop: 12 }}>Nothing matches. Try “jollof” or “water”.</Text>}
             renderItem={({ item: it }) => (
               <Pressable onPress={() => { void remember(q.trim()); router.push(`/customer/item/${it.id}`); }} style={{ flexDirection: 'row', gap: 12, alignItems: 'center', padding: 10, borderRadius: 16, borderWidth: 1, borderColor: color.border }}>
-                <PhotoTile tint={it.isAvailable ? it.tint : '#EFEAE6'} label={it.isAvailable ? '[Photo]' : 'Sold out'} style={{ width: 68, height: 68, borderRadius: 14 }} />
+                <PhotoTile tint={it.isAvailable ? it.tint : '#EFEAE6'} label={it.isAvailable ? '[Photo]' : 'Sold out'} photo={photoFor(it)} dim={!it.isAvailable} style={{ width: 68, height: 68, borderRadius: 14 }} />
                 <View style={{ flex: 1, gap: 3 }}>
                   <Text size={15} weight={700}>{it.name}</Text>
                   <Text size={12} tone={color.inkMuted} numberOfLines={1}>{it.description}</Text>

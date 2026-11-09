@@ -11,5 +11,7 @@ export const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN ?? '';
  */
 export const DEMO = !SUPABASE_URL || !SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_DEMO === '1';
 
-export const SUPPORT_PHONE = '+233240000002';
+// Help & contact (Account): the support line and the WhatsApp number.
+export const SUPPORT_PHONE = '+233559776547';
+export const SUPPORT_WHATSAPP = '233246259166'; // digits only, for wa.me links
 export const LEGAL_URL = 'https://paajim.app';

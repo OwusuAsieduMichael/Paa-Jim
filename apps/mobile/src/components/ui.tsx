@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import {
-  ActivityIndicator, Pressable, StyleSheet, TextInput, View,
+  ActivityIndicator, Image, Pressable, StyleSheet, TextInput, View,
   type PressableProps, type StyleProp, type TextInputProps, type ViewStyle,
 } from 'react-native';
 import { router } from 'expo-router';
@@ -10,11 +10,13 @@ import type { BottomTabBarProps } from 'expo-router/js-tabs';
 import { Text } from './Text';
 import { Icon, type IconName } from './Icon';
 import { color, font, radius } from '@/theme';
+import type { Photo } from '@/lib/menuImages';
 
 // ---------------------------------------------------------------- Button
-type Variant = 'primary' | 'dark' | 'ghost' | 'outline' | 'soft' | 'tint';
+type Variant = 'primary' | 'outlinePrimary' | 'dark' | 'ghost' | 'outline' | 'soft' | 'tint';
 const VARIANT: Record<Variant, { bg: string; fg: string; border?: string }> = {
   primary: { bg: color.primary, fg: '#FFFFFF' },
+  outlinePrimary: { bg: '#FFFFFF', fg: color.primary, border: color.primary },
   dark: { bg: color.ink, fg: '#FFFFFF' },
   ghost: { bg: 'transparent', fg: color.inkMuted },
   outline: { bg: '#FFFFFF', fg: color.ink, border: color.border },
@@ -193,10 +195,22 @@ export function CodeBoxes({ value, length, height = 56, filledBg = color.canvas,
 }
 
 // ---------------------------------------------------------------- Photo placeholder
-export function PhotoTile({ tint, label = '[Photo]', style, children }: { tint: string; label?: string; style?: StyleProp<ViewStyle>; children?: ReactNode }) {
+// With a `photo` the tint shows only while it loads; without one, the tint and label stand in.
+export function PhotoTile({ tint, label = '[Photo]', photo, dim, style, children }: {
+  tint: string; label?: string; photo?: Photo; dim?: boolean; style?: StyleProp<ViewStyle>; children?: ReactNode;
+}) {
+  const flat = StyleSheet.flatten(style) ?? {};
+  const inner = { borderRadius: flat.borderRadius, borderTopLeftRadius: flat.borderTopLeftRadius, borderTopRightRadius: flat.borderTopRightRadius, overflow: 'hidden' as const };
   return (
-    <View style={[{ backgroundColor: tint, alignItems: 'center', justifyContent: 'center' }, style]}>
-      <Text size={10} weight={600} tone={color.photoText} align="center">{label}</Text>
+    <View style={[{ backgroundColor: photo?.fit === 'contain' ? '#FFFFFF' : tint, alignItems: 'center', justifyContent: 'center' }, style]}>
+      {photo ? (
+        <View style={[StyleSheet.absoluteFill, inner]}>
+          <Image source={photo.source} resizeMode={photo.fit} style={[{ width: '100%', height: '100%' }, photo.fit === 'contain' && { transform: [{ scale: 0.9 }] }]} accessibilityIgnoresInvertColors />
+          {dim && <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255,255,255,0.6)', alignItems: 'center', justifyContent: 'center' }]}><Text size={11} weight={700} tone={color.inkMuted}>Sold out</Text></View>}
+        </View>
+      ) : (
+        <Text size={10} weight={600} tone={color.photoText} align="center">{label}</Text>
+      )}
       {children}
     </View>
   );

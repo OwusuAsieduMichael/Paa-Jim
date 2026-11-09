@@ -6,19 +6,17 @@ import { Text } from '@/components/Text';
 import { BackButton, Banner, Button, Loading } from '@/components/ui';
 import { color, font } from '@/theme';
 import { ghs } from '@/lib/money';
-import { groupLocal, toE164Ghana } from '@/lib/phone';
-import { useOrder } from '@/hooks/data';
+import { groupLocal, prettyPhone, toE164Ghana } from '@/lib/phone';
+import { NETS, guessNetwork, netInfo } from '@/lib/momo';
+import { Icon } from '@/components/Icon';
+import { NetBadge } from '@/components/NetBadge';
+import { useLoad, useOrder } from '@/hooks/data';
 import { useSession } from '@/stores/session';
 import { useCart } from '@/stores/cart';
 import { backend, type Network } from '@/backend';
 
-const NETS: Array<{ id: Network; name: string; sub: string; mark: string; badge: string; fg: string }> = [
-  { id: 'mtn', name: 'MTN MoMo', sub: 'Approve with your MoMo PIN', mark: 'MTN', badge: '#FFCC00', fg: '#1A1A1A' },
-  { id: 'vod', name: 'Telecel Cash', sub: 'You may get a one-time code by SMS', mark: 'TC', badge: '#1A1A1A', fg: '#FFFFFF' },
-  { id: 'atl', name: 'AirtelTigo Money', sub: 'Approve with your PIN', mark: 'AT', badge: '#1F3C88', fg: '#FFFFFF' },
-];
-
 type Stage = 'choose' | 'otp' | 'waiting';
+const NEW = 'new';
 
 // 12 · Payment (MoMo via Paystack, through the Node service)
 export default function Payment() {
@@ -28,8 +26,21 @@ export default function Payment() {
   const clearCart = useCart((s) => s.clear);
   const { data: order } = useOrder(orderId);
 
-  const [net, setNet] = useState<Network>('mtn');
-  const [phone, setPhone] = useState(groupLocal((user?.phone ?? '').replace(/^233/, '')));
+  const saved = useLoad(() => backend.wallets(), []);
+  const wallets = saved.data ?? [];
+  // Which wallet pays: a saved one (default pre-selected) or NEW = type a number.
+  const [walletId, setWalletId] = useState<string | null>(null);
+  const [saveNew, setSaveNew] = useState(true);
+  const ownLocal = (user?.phone ?? '').replace(/^233/, '');
+  const [newNet, setNewNet] = useState<Network>(guessNetwork(ownLocal) ?? 'mtn');
+  const [phone, setPhone] = useState(groupLocal(ownLocal));
+  useEffect(() => {
+    if (walletId || saved.loading) return;
+    // Couldn't load saved wallets? Fall back to typing a number rather than blocking payment.
+    setWalletId(saved.data?.find((w) => w.isDefault)?.id ?? saved.data?.[0]?.id ?? NEW);
+  }, [saved.data, saved.loading, walletId]);
+  const chosen = wallets.find((w) => w.id === walletId);
+  const net: Network = chosen?.network ?? newNet;
   const [stage, setStage] = useState<Stage>('choose');
   const [reference, setReference] = useState<string | null>(null);
   const [otp, setOtp] = useState('');
@@ -62,12 +73,16 @@ export default function Payment() {
   }, [stage, orderId]);
 
   async function pay() {
-    const e164 = toE164Ghana(phone);
+    const e164 = chosen ? chosen.phone : toE164Ghana(phone);
     if (!e164) return setError('Enter your 9-digit MoMo number');
     setBusy(true);
     setError(null);
     try {
       const r = await backend.initiatePayment(orderId!, net, e164);
+      // A new number they chose to keep: save it for next time (best effort; already-saved is fine).
+      if (!chosen && saveNew && !wallets.some((w) => w.phone === e164)) {
+        void backend.saveWallet({ network: net, phone: e164 }).catch(() => {});
+      }
       setReference(r.reference);
       setStage(r.needsOtp ? 'otp' : 'waiting');
     } catch (e) {
@@ -91,7 +106,7 @@ export default function Payment() {
     }
   }
 
-  if (!order) return <Loading />;
+  if (!order || !walletId) return <Loading />;
   const hint = net === 'vod'
     ? 'After you tap Pay, enter the code Telecel texts you, then approve the prompt on your phone.'
     : 'After you tap Pay, a prompt will pop up on your phone. Enter your PIN to approve — keep this screen open.';
@@ -144,6 +159,35 @@ export default function Payment() {
           </View>
         ) : (
           <>
+            {wallets.length > 0 && (
+              <>
+                <Text size={16} weight={800} style={{ marginTop: 24, marginBottom: 12 }}>Pay from</Text>
+                <View style={{ gap: 10 }} accessibilityRole="radiogroup">
+                  {[...wallets.map((w) => ({ id: w.id, w })), { id: NEW, w: null }].map(({ id, w }) => {
+                    const on = walletId === id;
+                    return (
+                      <Pressable key={id} onPress={() => { setWalletId(id); setError(null); }} accessibilityRole="radio" accessibilityState={{ checked: on }}
+                        style={{ minHeight: 64, borderRadius: 16, borderWidth: on ? 2 : 1.5, borderColor: on ? color.primary : color.border, backgroundColor: on ? '#FFF7F7' : '#FFFFFF', paddingHorizontal: 14, paddingVertical: 10, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                        {w ? <NetBadge network={w.network} /> : (
+                          <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: color.canvas, alignItems: 'center', justifyContent: 'center' }}>
+                            <Icon name="plus" size={18} color={color.inkMuted} />
+                          </View>
+                        )}
+                        <View style={{ flex: 1, gap: 2 }}>
+                          <Text size={15} weight={700}>{w ? prettyPhone(w.phone) : 'Use another number'}</Text>
+                          <Text size={12} tone={color.inkMuted}>{w ? `${netInfo(w.network).name}${w.isDefault ? ' · Default' : ''}` : 'Any MoMo wallet'}</Text>
+                        </View>
+                        <View style={{ width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: on ? color.primary : color.ringIdle, alignItems: 'center', justifyContent: 'center' }}>
+                          {on && <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: color.primary }} />}
+                        </View>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </>
+            )}
+
+            {walletId === NEW && (<>
             <Text size={16} weight={800} style={{ marginTop: 24, marginBottom: 12 }}>Choose your network</Text>
             <View style={{ gap: 10 }} accessibilityRole="radiogroup">
               {NETS.map((n) => {
@@ -151,7 +195,7 @@ export default function Payment() {
                 return (
                   <Pressable
                     key={n.id}
-                    onPress={() => setNet(n.id)}
+                    onPress={() => setNewNet(n.id)}
                     accessibilityRole="radio"
                     accessibilityState={{ checked: on }}
                     style={{ height: 68, borderRadius: 16, borderWidth: on ? 2 : 1.5, borderColor: on ? color.primary : color.border, backgroundColor: on ? '#FFF7F7' : '#FFFFFF', paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 14 }}
@@ -177,12 +221,22 @@ export default function Payment() {
               <TextInput
                 accessibilityLabelledBy="momoLabel"
                 value={phone}
-                onChangeText={(t) => setPhone(groupLocal(t))}
+                onChangeText={(t) => { setPhone(groupLocal(t)); const g = guessNetwork(t); if (g) setNewNet(g); }}
                 keyboardType="phone-pad"
                 maxLength={11}
                 style={{ flex: 1, fontFamily: font[700], fontSize: 15, color: color.ink }}
               />
             </View>
+            {wallets.length < 5 && (
+              <Pressable onPress={() => setSaveNew((v) => !v)} accessibilityRole="checkbox" accessibilityState={{ checked: saveNew }}
+                style={{ marginTop: 10, minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View style={{ width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: saveNew ? color.primary : color.disabled, backgroundColor: saveNew ? color.primary : '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
+                  {saveNew && <Icon name="check" size={14} color="#FFFFFF" strokeWidth={3} />}
+                </View>
+                <Text size={13} weight={600}>{wallets.length === 0 ? 'Save as my default wallet' : 'Save this number for next time'}</Text>
+              </Pressable>
+            )}
+            </>)}
 
             <Banner tone="warning" icon="info" style={{ marginTop: 16 }}>{hint}</Banner>
             {error && <Banner tone="error" icon="alert" style={{ marginTop: 10 }}>{error}</Banner>}

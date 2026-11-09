@@ -7,6 +7,8 @@ import { Text } from '@/components/Text';
 import { Icon } from '@/components/Icon';
 import { BackButton, Chip, IconButton, Loading, PhotoTile } from '@/components/ui';
 import { CartBar } from '@/components/CartBar';
+import { CoverCarousel } from '@/components/CoverCarousel';
+import { photoFor } from '@/lib/menuImages';
 import { color, shadow } from '@/theme';
 import { ghs } from '@/lib/money';
 import { useKitchen, useMenu } from '@/hooks/data';
@@ -45,7 +47,7 @@ export default function Menu() {
           <Text size={12} lh={1.45} tone={color.inkMuted}>{it.description}</Text>
           <Text size={15} weight={800} tone={live ? color.primary : color.inkMuted}>{live ? ghs(it.price) : 'Sold out today'}</Text>
         </View>
-        <PhotoTile tint={live ? it.tint : '#EFEAE6'} label={live ? '[Photo]' : 'Sold out'} style={{ width: 96, height: 88, borderRadius: 16 }}>
+        <PhotoTile tint={live ? it.tint : '#EFEAE6'} label={live ? '[Photo]' : 'Sold out'} photo={photoFor(it)} dim={!live} style={{ width: 96, height: 88, borderRadius: 16 }}>
           <Pressable
             disabled={!live}
             onPress={() => add(it)}
@@ -65,9 +67,7 @@ export default function Menu() {
     <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
       <StatusBar style="light" />
       <View style={{ height: 190 + insets.top * 0.3, backgroundColor: color.primary, overflow: 'hidden' }}>
-        <View style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, alignItems: 'center', justifyContent: 'center' }}>
-          <Text size={12} weight={600} tone="rgba(255,255,255,0.55)">[Cover photo: Paa Jim’s kitchen]</Text>
-        </View>
+        <CoverCarousel height={190 + insets.top * 0.3} />
         <View style={{ position: 'absolute', top: insets.top + 8, left: 20, right: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
           <BackButton bg="#FFFFFF" onPress={() => router.navigate('/customer')} />
           <IconButton icon="search" label="Search" bg="#FFFFFF" onPress={() => router.push('/customer/search')} />
@@ -82,7 +82,7 @@ export default function Menu() {
           </View>
         </View>
         <View style={{ flexDirection: 'row', gap: 14 }}>
-          <Text size={12} weight={600} tone={color.inkMuted}>Jollof · Fried rice · Drinks</Text>
+          <Text size={12} weight={600} tone={color.inkMuted}>Jollof · Fried rice · Rice & stew · Drinks</Text>
           <Text size={12} weight={600} tone={kitchen.data?.accepting === false ? color.primaryText : color.inkMuted}>
             {kitchen.data?.accepting === false ? kitchen.data.reason : `${kitchen.data?.etaMin ?? 25}–${kitchen.data?.etaMax ?? 35} min`}
           </Text>

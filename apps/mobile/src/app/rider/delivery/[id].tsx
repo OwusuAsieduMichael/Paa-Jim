@@ -4,18 +4,19 @@ import { Linking, Platform, Pressable, ScrollView, TextInput, View } from 'react
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Text } from '@/components/Text';
 import { Icon } from '@/components/Icon';
 import { Banner, Button, CodeBoxes, IconButton, Loading } from '@/components/ui';
 import { ReasonSheet } from '@/components/ReasonSheet';
-import { Pin } from '@/components/MiniMap';
+import { MAP_PROVIDER, Pin } from '@/components/MiniMap';
 import { color, shadow } from '@/theme';
 import { itemCount } from '@/lib/format';
 import { km, toLatLng, type LatLng } from '@/lib/geo';
-import { initials, firstNameInitial } from '@/lib/phone';
+import { prettyPhone } from '@/lib/phone';
+import { Avatar } from '@/components/Avatar';
 import { useOrder } from '@/hooks/data';
 import { startDeliveryTracking, stopDeliveryTracking } from '@/features/riderTracking';
 import { backend, BackendError } from '@/backend';
@@ -136,7 +137,7 @@ export default function RiderDelivery() {
     <View style={{ flex: 1, backgroundColor: color.map }}>
       <StatusBar style="light" />
       {region && (
-        <MapView provider={PROVIDER_GOOGLE} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '60%' }} initialRegion={region} showsUserLocation showsMyLocationButton={false} toolbarEnabled={false}
+        <MapView provider={MAP_PROVIDER} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '60%' }} initialRegion={region} showsUserLocation showsMyLocationButton={false} toolbarEnabled={false}
           accessibilityLabel="Navigation map to the customer">
           <Marker coordinate={toLatLng(dest)} anchor={{ x: 0.5, y: 1 }} tracksViewChanges={false} title={o.gpsCode}><Pin /></Marker>
           {me && <Polyline coordinates={[toLatLng(me), toLatLng(dest)]} strokeColor={color.primary} strokeWidth={6} lineDashPattern={[1]} />}
@@ -164,11 +165,10 @@ export default function RiderDelivery() {
           </View>
 
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-            <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: color.primaryTint, alignItems: 'center', justifyContent: 'center' }}>
-              <Text size={14} weight={800} tone={color.primary}>{initials(o.customerName)}</Text>
-            </View>
+            <Avatar url={o.customerAvatarUrl} name={o.customerName} size={52} />
             <View style={{ flex: 1 }}>
-              <Text size={16} weight={700}>{firstNameInitial(o.customerName) || 'Customer'}</Text>
+              <Text size={16} weight={700} numberOfLines={1}>{o.customerName || 'Customer'}</Text>
+              {o.customerPhone && <Text size={13} weight={600}>{prettyPhone(o.customerPhone)}</Text>}
               <Text size={12} tone={color.inkMuted}>{[o.gpsCode, o.landmark].filter(Boolean).join(' · ')}</Text>
               {o.riderNote && <Text size={12} weight={600} tone={color.warningInk}>“{o.riderNote}”</Text>}
             </View>

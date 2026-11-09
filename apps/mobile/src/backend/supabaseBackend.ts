@@ -2,12 +2,14 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { API_URL } from '@/lib/config';
 import {
-  BackendError, type Address, type Backend, type Order, type OrderStatus, type User, type MenuItem,
+  BackendError, type Address, type Backend, type Order, type OrderStatus, type User, type MenuItem, type Wallet,
   ACTIVE_STATUSES, KITCHEN_STATUSES,
 } from './types';
 
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
+const AVATARS = 'avatars';
+const mapWallet = (r: Row): Wallet => ({ id: r.id, network: r.network, phone: r.phone, label: r.label, isDefault: r.is_default });
 const ORDER_COLS = '*, order_items(name, qty, unit_price, line_total, note), ratings(order_id)';
 
 function mapOrder(r: Row): Order {
@@ -17,8 +19,8 @@ function mapOrder(r: Row): Order {
     items: (r.order_items ?? []).map((i: Row) => ({ name: i.name, qty: i.qty, unitPrice: String(i.unit_price), lineTotal: String(i.line_total), note: i.note })),
     addressLabel: r.address_label, gpsCode: r.gps_code, landmark: r.landmark, distanceKm: Number(r.distance_km),
     destLat: r.dest_lat, destLng: r.dest_lng, riderNote: r.rider_note,
-    customerId: r.customer_id, customerName: r.customer_name, customerPhone: r.customer_phone,
-    riderId: r.rider_id, riderName: r.rider_name, riderPhone: r.rider_phone,
+    customerId: r.customer_id, customerName: r.customer_name, customerPhone: r.customer_phone, customerAvatarUrl: r.customer_avatar_url,
+    riderId: r.rider_id, riderName: r.rider_name, riderPhone: r.rider_phone, riderAvatarUrl: r.rider_avatar_url,
     momoNetwork: r.momo_network, momoLast4: r.momo_last4,
     rejectReason: r.reject_reason, cancelReason: r.cancel_reason, failureReason: r.failure_reason,
     verifyAttempts: r.verify_attempts ?? 0,
@@ -43,6 +45,24 @@ function fail(error: { message: string; code?: string } | null): never {
   const msg = error?.message ?? 'Something went wrong';
   const network = /network|fetch|timed? ?out/i.test(msg);
   throw new BackendError(network ? 'No connection — check your data and try again' : msg, error?.code, network);
+}
+
+/** Errors from sending a code (sign-up, log-in, phone change). */
+function otpFail(error: { message: string; code?: string }): never {
+  // shouldCreateUser: false on an unknown number → "Signups not allowed for otp" (otp_disabled)
+  if (error.code === 'otp_disabled' || /signups? not allowed|user not found/i.test(error.message)) {
+    throw new BackendError('No account with this number', 'no_account');
+  }
+  if (/rate limit|security purposes|too many/i.test(error.message)) {
+    throw new BackendError('Too many codes requested. Wait a minute and try again.', 'rate_limited');
+  }
+  fail(error);
+}
+
+/** Errors from checking a code. */
+function codeFail(error: { message: string; code?: string }): never {
+  if (/expired|invalid|otp/i.test(error.message)) throw new BackendError('That code is wrong or has expired', 'bad_code');
+  fail(error);
 }
 
 async function rpc<T>(fn: string, args: Record<string, unknown> = {}): Promise<T> {
@@ -74,9 +94,9 @@ async function loadUser(): Promise<User | null> {
   const { data } = await supabase.auth.getSession();
   const uid = data.session?.user.id;
   if (!uid) return null;
-  const { data: p } = await supabase.from('profiles').select('id, role, phone, full_name, is_active').eq('id', uid).maybeSingle();
+  const { data: p } = await supabase.from('profiles').select('id, role, phone, full_name, avatar_url, is_active').eq('id', uid).maybeSingle();
   if (!p || !p.is_active) return null;
-  return { id: p.id, role: p.role, phone: p.phone, fullName: p.full_name };
+  return { id: p.id, role: p.role, phone: p.phone, fullName: p.full_name, avatarUrl: p.avatar_url };
 }
 
 function channel(name: string, setup: (c: RealtimeChannel) => RealtimeChannel) {
@@ -91,25 +111,94 @@ export const supabaseBackend: Backend = {
 
   currentUser: loadUser,
 
-  async sendOtp(e164) {
-    const { error } = await supabase.auth.signInWithOtp({ phone: e164 });
-    if (error) fail(error);
+  async sendOtp(e164, intent) {
+    const { error } = await supabase.auth.signInWithOtp({
+      phone: e164,
+      options: intent.mode === 'signup'
+        ? { shouldCreateUser: true, data: { full_name: intent.fullName } }
+        : { shouldCreateUser: false },
+    });
+    if (error) otpFail(error);
   },
 
   async verifyOtp(e164, code) {
     const { error } = await supabase.auth.verifyOtp({ phone: e164, token: code, type: 'sms' });
-    if (error) throw new BackendError(/expired|invalid/i.test(error.message) ? 'That code is wrong or has expired' : error.message);
+    if (error) codeFail(error);
     const u = await loadUser();
     if (!u) throw new BackendError('This account is disabled. Contact Paa Jim.');
     return u;
   },
 
-  async signOut() { await supabase.auth.signOut(); },
+  async requestPhoneChange(newE164) {
+    const { error } = await supabase.auth.updateUser({ phone: newE164 });
+    if (error) {
+      if (/already|registered|exists/i.test(error.message)) throw new BackendError('That number already has a Paa Jim account', 'phone_taken');
+      otpFail(error);
+    }
+  },
+
+  async confirmPhoneChange(newE164, code) {
+    const { error } = await supabase.auth.verifyOtp({ phone: newE164, token: code, type: 'phone_change' });
+    if (error) codeFail(error);
+    const u = await loadUser();
+    if (!u) throw new BackendError('Please sign in again');
+    return u;
+  },
+
+  // 'local': only this device. The default ('global') would also sign out the other kitchen tablets on the same account.
+  async signOut() { await supabase.auth.signOut({ scope: 'local' }); },
 
   async updateName(fullName) {
     const { data } = await supabase.auth.getSession();
     const { error } = await supabase.from('profiles').update({ full_name: fullName }).eq('id', data.session!.user.id);
     if (error) fail(error);
+  },
+
+  async wallets() {
+    const { data, error } = await supabase.from('momo_wallets').select('*').order('is_default', { ascending: false }).order('created_at');
+    if (error) fail(error);
+    return (data ?? []).map(mapWallet);
+  },
+
+  async saveWallet(w) {
+    const row = { network: w.network, phone: w.phone, label: w.label ?? null, ...(w.isDefault !== undefined ? { is_default: w.isDefault } : {}) };
+    const q = w.id
+      ? supabase.from('momo_wallets').update(row).eq('id', w.id).select().single()
+      : supabase.from('momo_wallets').insert(row).select().single();
+    const { data, error } = await q;
+    if (error) {
+      if (error.code === '23505') throw new BackendError('That number is already saved.', 'duplicate');
+      fail(error);
+    }
+    return mapWallet(data);
+  },
+
+  async deleteWallet(id) {
+    const { error } = await supabase.from('momo_wallets').delete().eq('id', id);
+    if (error) fail(error);
+  },
+
+  async setAvatar(localUri) {
+    const { data } = await supabase.auth.getSession();
+    const uid = data.session!.user.id;
+    const { data: before } = await supabase.from('profiles').select('avatar_url').eq('id', uid).maybeSingle();
+    let url: string | null = null;
+    if (localUri) {
+      // A new file name each time, so phones and the CDN never show a stale photo.
+      const path = `${uid}/${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+      const body = await (await fetch(localUri)).arrayBuffer();
+      const up = await supabase.storage.from(AVATARS).upload(path, body, { contentType: 'image/jpeg', upsert: false });
+      if (up.error) throw new BackendError('Could not upload the photo. Check your connection and try again.', 'upload_failed');
+      url = supabase.storage.from(AVATARS).getPublicUrl(path).data.publicUrl;
+    }
+    const { error } = await supabase.from('profiles').update({ avatar_url: url }).eq('id', uid);
+    if (error) fail(error);
+    // Tidy up the old file (best effort: a leftover file is harmless).
+    const old = before?.avatar_url?.split(`/${AVATARS}/`)[1];
+    if (old) void supabase.storage.from(AVATARS).remove([old]).catch(() => {});
+    const u = await loadUser();
+    if (!u) throw new BackendError('You were signed out. Log in again.', 'signed_out');
+    return u;
   },
 
   onAuthChange(cb) {
@@ -124,6 +213,10 @@ export const supabaseBackend: Backend = {
     const { data } = await supabase.auth.getSession();
     if (!data.session) return;
     await supabase.from('device_tokens').upsert({ token, platform, user_id: data.session.user.id, last_seen: new Date().toISOString() });
+  },
+
+  async unregisterPushToken(token) {
+    await supabase.from('device_tokens').delete().eq('token', token);
   },
 
   async kitchenStatus() {
@@ -163,7 +256,7 @@ export const supabaseBackend: Backend = {
       : supabase.from('addresses').insert(row).select().single();
     const { data, error } = await q;
     if (error) {
-      if (/gps_code/.test(error.message)) throw new BackendError('Check the GPS address — it looks like AK-485-9302');
+      if (/gps_code/.test(error.message)) throw new BackendError('Check the GPS address — it looks like AS-485-9302');
       fail(error);
     }
     return mapAddress(data!);
