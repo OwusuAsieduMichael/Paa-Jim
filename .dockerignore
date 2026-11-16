@@ -1,0 +1,10 @@
+# Keep the API image small and free of local files and secrets
+**/node_modules
+**/dist
+**/.env
+**/.env.*
+.git
+apps/mobile
+packages
+design
+supabase

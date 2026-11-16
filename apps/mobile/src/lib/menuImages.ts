@@ -23,6 +23,8 @@ export const PHOTOS = {
   // These sit on plain white, so they are shown whole on a white tile.
   malt: drink(require('../../assets/menu/drink-malt.jpg')),
   water: drink(require('../../assets/menu/drink-water.jpg')),
+  // Welcome slide: the drinks line-up on ice.
+  drinksWelcome: food(require('../../assets/menu/drinks-welcome.jpg')),
 } satisfies Record<string, Photo>;
 
 export const COVER = require('../../assets/brand/cover.jpg') as ImageSourcePropType;

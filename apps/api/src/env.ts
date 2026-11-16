@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Handbook §2.10 — Railway secrets, never public.
+// Server secrets (Render dashboard in production), never public.
 const schema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().default(3000),
@@ -32,7 +32,9 @@ const schema = z.object({
   VENDOR_ALERT_ESCALATE_MINUTES: z.coerce.number().default(5),
   RECONCILE_AFTER_SECONDS: z.coerce.number().default(90),
   ABANDON_PAYMENT_MINUTES: z.coerce.number().default(30),
-  // Behind Railway's proxy the client IP is in X-Forwarded-For.
+  // Lets NODE_ENV=production run with a Paystack sk_test_ key while testing on the live server.
+  ALLOW_TEST_PAYSTACK_KEY: z.enum(['true', 'false']).default('false').transform((v) => v === 'true'),
+  // Behind Render's proxy the client IP is in X-Forwarded-For.
   TRUST_PROXY: z.coerce.boolean().default(true),
 });
 
@@ -44,7 +46,7 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     const issues = parsed.error.issues.map((i) => `  ${i.path.join('.')}: ${i.message}`).join('\n');
     throw new Error(`Invalid environment:\n${issues}`);
   }
-  if (parsed.data.NODE_ENV === 'production' && parsed.data.PAYSTACK_SECRET_KEY.startsWith('sk_test_')) {
+  if (parsed.data.NODE_ENV === 'production' && parsed.data.PAYSTACK_SECRET_KEY.startsWith('sk_test_') && !parsed.data.ALLOW_TEST_PAYSTACK_KEY) {
     throw new Error('Refusing to start: test Paystack key in production');
   }
   return parsed.data;

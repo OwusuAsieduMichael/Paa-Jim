@@ -15,7 +15,7 @@ import { backend } from '@/backend';
 const SLIDES = [
   { photo: PHOTOS.jollofAssorted, tint: color.primaryTint, title: ['Welcome to ', 'Paa Jim'], body: 'Smoky jollof and fried rice from Paa Jim’s kitchen in Effiduase — cooked fresh, every day.' },
   { photo: PHOTOS.friedRiceChicken, tint: '#FBEBD0', title: ['Hot from the ', 'kitchen'], body: 'Order in a few taps and watch your rider bring it to your door, live on the map.' },
-  { photo: PHOTOS.riceStewPlantain, tint: '#E3F0E6', title: ['Add a ', 'cold drink'], body: 'Coke, Fanta, Sprite, Pepsi, Malta or Awake water — and pay with MoMo, no cash needed.' },
+  { photo: PHOTOS.drinksWelcome, tint: '#E1EEF7', title: ['Add a ', 'cold drink'], body: 'Coke, Fanta, Sprite, Pepsi, Malta or Awake water — and pay with MoMo, no cash needed.' },
 ];
 const AUTO_MS = 4000;
 

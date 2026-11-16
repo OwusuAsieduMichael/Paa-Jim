@@ -1,0 +1,45 @@
+# Render Blueprint for the Paa Jim API (Fastify).
+# Render dashboard → New → Blueprint → pick this repo. Secrets marked `sync: false`
+# are typed into the dashboard once; they never live in git.
+services:
+  - type: web
+    name: paajim-api
+    runtime: docker
+    plan: starter            # always on; the free plan sleeps and would drop webhooks and login SMS
+    region: frankfurt        # same region as the Supabase project (eu-central-1)
+    branch: main
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - apps/api/**
+        - package-lock.json
+        - render.yaml
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SUPABASE_URL
+        value: https://wakqutehluzrwsiqncye.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: PAYSTACK_SECRET_KEY
+        sync: false
+      # Set to true only while testing with a Paystack sk_test_ key; remove before launch.
+      - key: ALLOW_TEST_PAYSTACK_KEY
+        value: "false"
+      - key: SMS_PROVIDER
+        value: arkesel
+      - key: SMS_API_KEY
+        sync: false
+      - key: SMS_SENDER_ID
+        value: PaaJim
+      - key: SEND_SMS_HOOK_SECRET
+        sync: false
+      - key: KITCHEN_ALERT_PHONE
+        sync: false
+      - key: FCM_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: REDIS_URL
+        sync: false
