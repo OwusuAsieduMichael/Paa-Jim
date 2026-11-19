@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Delete Your Account · Paa Jim</title>
+  <meta name="description" content="How to delete your Paa Jim account and personal data, and what we keep.">
+  <link rel="icon" href="/icon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <img src="/icon-192.png" alt="">
+      <a class="brand" href="/">Paa <span>Jim</span></a>
+      <nav aria-label="Site">
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+        <a href="/delete-account/" aria-current="page">Delete account</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>Delete your Paa Jim account</h1>
+    <p class="lead">You can ask us to delete your account and personal data at any time.</p>
+
+    <h2>Send your request</h2>
+    <form id="req" onsubmit="return false">
+      <label for="phone">The phone number you log in with</label>
+      <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="055 123 4567">
+    </form>
+    <div class="actions">
+      <a class="btn" id="wa" href="https://wa.me/233246259166">Request on WhatsApp</a>
+      <a class="btn secondary" href="tel:+233559776547">Call 055 977 6547</a>
+    </div>
+    <p>We reply to confirm the number is yours, then delete the account within <strong>7 days</strong> and let you know when it is done. If you have an order in progress, we finish or refund it first.</p>
+
+    <h2>What we delete</h2>
+    <ul>
+      <li>Your name, profile photo and login</li>
+      <li>Your saved delivery addresses</li>
+      <li>Your saved MoMo numbers</li>
+      <li>Your notification tokens</li>
+    </ul>
+
+    <h2>What we keep</h2>
+    <ul>
+      <li>Records of past orders and payments, for up to six years, because tax and accounting law requires it and so we can handle refunds and disputes. They are no longer linked to an active account.</li>
+      <li>Rider location points are deleted automatically after 30 days, whether or not an account is deleted.</li>
+    </ul>
+    <p>See our <a href="/privacy/">Privacy Policy</a> for details.</p>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© 2026 Paa Jim Fast Food · Effiduase, Ashanti, Ghana</span>
+      <a href="/privacy/">Privacy</a>
+      <a href="/terms/">Terms</a>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var input = document.getElementById('phone');
+      var wa = document.getElementById('wa');
+      // The app opens this page with ?phone=233…; show it in local format.
+      var given = new URLSearchParams(location.search).get('phone') || '';
+      var digits = given.replace(/\D/g, '');
+      if (digits.indexOf('233') === 0 && digits.length === 12) digits = '0' + digits.slice(3);
+      if (/^0\d{9}$/.test(digits)) input.value = digits.replace(/^(\d{3})(\d{3})(\d{4})$/, '$1 $2 $3');
+
+      function update() {
+        var phone = input.value.trim();
+        var text = 'Hello Paa Jim, please delete my account and personal data.' + (phone ? ' My login number is ' + phone + '.' : '');
+        wa.href = 'https://wa.me/233246259166?text=' + encodeURIComponent(text);
+      }
+      input.addEventListener('input', update);
+      update();
+    })();
+  </script>
+</body>
+</html>
