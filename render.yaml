@@ -26,9 +26,9 @@ services:
         sync: false
       - key: PAYSTACK_SECRET_KEY
         sync: false
-      # Set to true only while testing with a Paystack sk_test_ key; remove before launch.
+      # Set in the dashboard: "true" while testing with a Paystack sk_test_ key, "false" at launch.
       - key: ALLOW_TEST_PAYSTACK_KEY
-        value: "false"
+        sync: false
       - key: SMS_PROVIDER
         value: arkesel
       - key: SMS_API_KEY

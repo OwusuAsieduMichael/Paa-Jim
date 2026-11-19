@@ -82,7 +82,8 @@ const config: ExpoConfig = {
   ],
   experiments: { typedRoutes: false },
   extra: {
-    eas: { projectId: process.env.EAS_PROJECT_ID },
+    // Not a secret: identifies the project on expo.dev (@banahene_mike70/paajim).
+    eas: { projectId: 'dfa12ad1-380a-4de7-83c8-bae773956592' },
   },
 };
 
