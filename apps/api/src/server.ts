@@ -1,5 +1,6 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 import rateLimit from '@fastify/rate-limit';
+import cors from '@fastify/cors';
 import { ZodError } from 'zod';
 import { loadEnv, type Env } from './env.js';
 import { createServiceClient } from './lib/supabase.js';
@@ -38,6 +39,16 @@ export async function buildApp(opts: BuildOptions = {}): Promise<{ app: FastifyI
   });
 
   await app.register(rateLimit, { max: 120, timeWindow: '1 minute' });
+
+  // Only the admin dashboard calls the API from a browser. The mobile app isn't
+  // subject to CORS, and webhooks are server-to-server.
+  const origins = env.ADMIN_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean);
+  await app.register(cors, {
+    origin: origins,
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
+    allowedHeaders: ['Authorization', 'Content-Type'],
+    maxAge: 600,
+  });
 
   app.setErrorHandler((err, req, reply) => {
     if (err instanceof ZodError) {

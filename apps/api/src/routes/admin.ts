@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import type { Ctx } from '../context.js';
-import { assertAdmin, audit, HttpError } from '../auth.js';
+import { assertAdmin, assertRole, audit, HttpError } from '../auth.js';
 import { applyPaymentResult } from '../domain/payments.js';
 
 // Admin controls money and people. Every route: admin role + MFA (aal2),
@@ -50,7 +50,7 @@ export async function adminRoutes(app: FastifyInstance, ctx: Ctx) {
 
   app.get('/admin/team', async (req) => {
     await assertAdmin(req, db);
-    const { data } = await db.from('profiles').select('id, role, full_name, phone, is_active, created_at, rider:rider_profiles(vehicle, on_shift, location_updated_at)').neq('role', 'customer').order('role');
+    const { data } = await db.from('profiles').select('id, role, full_name, phone, avatar_url, is_active, created_at, rider:rider_profiles(vehicle, on_shift, location_updated_at)').neq('role', 'customer').order('role');
     return data;
   });
 
@@ -60,23 +60,121 @@ export async function adminRoutes(app: FastifyInstance, ctx: Ctx) {
     return data;
   });
 
+  // Who is signed in to the dashboard. Admin role only, before the second factor,
+  // so the dashboard can tell "not an admin" apart from "needs the authenticator code".
+  app.get('/admin/me', async (req) => {
+    const caller = await assertRole(req, db, 'admin');
+    const { data } = await db.from('profiles').select('full_name, phone, avatar_url').eq('id', caller.id).single();
+    return { id: caller.id, aal: caller.aal, ...data };
+  });
+
+  app.get<{ Params: { orderId: string } }>('/admin/orders/:orderId', async (req) => {
+    await assertAdmin(req, db);
+    const id = uuid.parse(req.params.orderId);
+    const [{ data: order }, { data: items }, { data: payments }, { data: refunds }, { data: rating }] = await Promise.all([
+      db.from('orders').select('*').eq('id', id).maybeSingle(),
+      db.from('order_items').select('name, unit_price, qty, line_total, note').eq('order_id', id).order('id'),
+      db.from('payments').select('id, reference, network, phone, amount, status, gateway_response, created_at, verified_at').eq('order_id', id).order('created_at'),
+      db.from('refunds').select('id, amount, status, reason, attempts, last_error, created_at, updated_at').eq('order_id', id).order('created_at'),
+      db.from('ratings').select('*').eq('order_id', id).maybeSingle(),
+    ]);
+    if (!order) throw new HttpError(404, 'Order not found');
+    const { location: _loc, ...rest } = order as Record<string, unknown>;
+    return { order: rest, items, payments, refunds, rating };
+  });
+
+  app.get('/admin/menu', async (req) => {
+    await assertAdmin(req, db);
+    const [{ data: categories }, { data: items }, { data: bands }] = await Promise.all([
+      db.from('menu_categories').select('id, name, sort').order('sort'),
+      db.from('menu_items').select('id, category_id, name, description, price, is_available, is_active, is_popular, image_url, tint, sort').order('sort'),
+      db.from('delivery_fee_bands').select('min_km, max_km, fee').order('min_km'),
+    ]);
+    return { categories, items, bands };
+  });
+
   // ---------------------------------------------------------------- people
-  async function provision(role: 'rider' | 'vendor_staff', body: { phone: string; full_name: string; vehicle?: string }) {
-    const { data, error } = await db.auth.admin.createUser({ phone: body.phone, phone_confirm: true });
-    if (error || !data.user) throw new HttpError(409, error?.message ?? 'Could not create user');
-    const id = data.user.id;
-    const { error: pErr } = await db.from('profiles').update({ role, full_name: body.full_name }).eq('id', id);
+  type StaffRole = 'rider' | 'vendor_staff' | 'admin';
+  const ROLE_NAME: Record<string, string> = { rider: 'a rider', vendor_staff: 'kitchen staff', admin: 'an admin', customer: 'a customer' };
+
+  // Creates the login, or promotes the existing customer account with that number
+  // (people often sign up in the app before being made staff).
+  async function provision(role: StaffRole, body: { phone: string; full_name: string; vehicle?: string }) {
+    const { data: existing } = await db.from('profiles').select('id, role').eq('phone', body.phone).maybeSingle();
+    let id: string;
+    if (existing) {
+      if (existing.role === role) throw new HttpError(409, `This number is already ${ROLE_NAME[role]}`);
+      if (existing.role !== 'customer') throw new HttpError(409, `This number belongs to ${ROLE_NAME[existing.role]}. Remove that role first.`);
+      id = existing.id;
+    } else {
+      const { data, error } = await db.auth.admin.createUser({ phone: body.phone, phone_confirm: true });
+      if (error || !data.user) throw new HttpError(409, error?.message ?? 'Could not create user');
+      id = data.user.id;
+    }
+    const { error: pErr } = await db.from('profiles').update({ role, full_name: body.full_name, is_active: true }).eq('id', id);
     if (pErr) throw new HttpError(500, pErr.message);
-    if (role === 'rider') await db.from('rider_profiles').insert({ user_id: id, vehicle: body.vehicle ?? 'Motorbike' });
-    return id;
+    if (role === 'rider') {
+      await db.from('rider_profiles').upsert({ user_id: id, vehicle: body.vehicle ?? 'Motorbike' }, { onConflict: 'user_id' });
+    }
+    // Sessions carry the old role; make them sign in again.
+    if (existing) await db.auth.admin.signOut(id).catch(() => undefined);
+    return { id, promoted: Boolean(existing) };
   }
+
+  app.post('/admin/admins', async (req) => {
+    const admin = await assertAdmin(req, db);
+    const b = z.object({ phone: ghPhone, full_name: z.string().trim().min(2).max(80), reason }).parse(req.body);
+    const r = await provision('admin', b);
+    await audit(db, admin, 'admin.create', { type: 'profile', id: r.id }, b.reason, { phone: b.phone, promoted: r.promoted });
+    return r;
+  });
+
+  // Remove admin rights (back to a customer account) or pause/resume an admin.
+  app.patch<{ Params: { userId: string } }>('/admin/admins/:userId', async (req) => {
+    const admin = await assertAdmin(req, db);
+    const id = uuid.parse(req.params.userId);
+    const b = z.object({ is_active: z.boolean().optional(), revoke: z.literal(true).optional(), reason }).parse(req.body);
+    if (b.is_active === undefined && !b.revoke) throw new HttpError(400, 'Nothing to change');
+    if (id === admin.id) throw new HttpError(409, 'You can’t remove or pause your own admin access. Ask another admin.');
+    const { data: p } = await db.from('profiles').select('role, is_active').eq('id', id).single();
+    if (p?.role !== 'admin') throw new HttpError(404, 'Admin not found');
+    const losing = b.revoke || b.is_active === false;
+    if (losing) {
+      const { count } = await db.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'admin').eq('is_active', true).neq('id', id);
+      if (!count) throw new HttpError(409, 'There must always be at least one active admin');
+    }
+    const patch: Record<string, unknown> = b.revoke ? { role: 'customer' } : { is_active: b.is_active };
+    const { error } = await db.from('profiles').update(patch).eq('id', id);
+    if (error) throw new HttpError(500, error.message);
+    if (losing) await db.auth.admin.signOut(id).catch(() => undefined);
+    await audit(db, admin, b.revoke ? 'admin.revoke' : 'admin.update', { type: 'profile', id }, b.reason, patch);
+    return { ok: true };
+  });
+
+  // Take away a rider's or kitchen staff member's role; the account stays as a customer.
+  app.post<{ Params: { userId: string } }>('/admin/team/:userId/remove-role', async (req) => {
+    const admin = await assertAdmin(req, db);
+    const id = uuid.parse(req.params.userId);
+    const { reason: r } = z.object({ reason }).parse(req.body);
+    const { data: p } = await db.from('profiles').select('role').eq('id', id).single();
+    if (p?.role !== 'rider' && p?.role !== 'vendor_staff') throw new HttpError(404, 'Rider or kitchen staff member not found');
+    if (p.role === 'rider') {
+      const { count } = await db.from('orders').select('id', { count: 'exact', head: true }).eq('rider_id', id).in('status', ['en_route', 'arrived']);
+      if (count) throw new HttpError(409, 'This rider is delivering an order right now. Try again after it’s finished.');
+      await db.from('rider_profiles').update({ on_shift: false }).eq('user_id', id);
+    }
+    await db.from('profiles').update({ role: 'customer' }).eq('id', id);
+    await db.auth.admin.signOut(id).catch(() => undefined);
+    await audit(db, admin, `${p.role}.remove_role`, { type: 'profile', id }, r);
+    return { ok: true };
+  });
 
   app.post('/admin/riders', async (req) => {
     const admin = await assertAdmin(req, db);
     const b = z.object({ phone: ghPhone, full_name: z.string().trim().min(2).max(80), vehicle: z.string().max(40).optional(), reason }).parse(req.body);
-    const id = await provision('rider', b);
-    await audit(db, admin, 'rider.create', { type: 'profile', id }, b.reason, { phone: b.phone });
-    return { id };
+    const { id, promoted } = await provision('rider', b);
+    await audit(db, admin, 'rider.create', { type: 'profile', id }, b.reason, { phone: b.phone, promoted });
+    return { id, promoted };
   });
 
   app.patch<{ Params: { userId: string } }>('/admin/riders/:userId', async (req) => {
@@ -101,9 +199,9 @@ export async function adminRoutes(app: FastifyInstance, ctx: Ctx) {
   app.post('/admin/vendor-staff', async (req) => {
     const admin = await assertAdmin(req, db);
     const b = z.object({ phone: ghPhone, full_name: z.string().trim().min(2).max(80), reason }).parse(req.body);
-    const id = await provision('vendor_staff', b);
-    await audit(db, admin, 'vendor_staff.create', { type: 'profile', id }, b.reason, { phone: b.phone });
-    return { id };
+    const { id, promoted } = await provision('vendor_staff', b);
+    await audit(db, admin, 'vendor_staff.create', { type: 'profile', id }, b.reason, { phone: b.phone, promoted });
+    return { id, promoted };
   });
 
   app.patch<{ Params: { userId: string } }>('/admin/vendor-staff/:userId', async (req) => {

@@ -1,0 +1,7 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+  X-Robots-Tag: noindex, nofollow
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://wakqutehluzrwsiqncye.supabase.co; connect-src 'self' https://wakqutehluzrwsiqncye.supabase.co wss://wakqutehluzrwsiqncye.supabase.co https://paajim-api.onrender.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'

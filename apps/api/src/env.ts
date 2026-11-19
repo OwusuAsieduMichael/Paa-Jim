@@ -32,6 +32,8 @@ const schema = z.object({
   VENDOR_ALERT_ESCALATE_MINUTES: z.coerce.number().default(5),
   RECONCILE_AFTER_SECONDS: z.coerce.number().default(90),
   ABANDON_PAYMENT_MINUTES: z.coerce.number().default(30),
+  // Browser origins allowed to call the API (the admin dashboard). Comma-separated.
+  ADMIN_ORIGINS: z.string().default('https://admin.paajim.app,http://localhost:5174'),
   // Lets NODE_ENV=production run with a Paystack sk_test_ key while testing on the live server.
   ALLOW_TEST_PAYSTACK_KEY: z.enum(['true', 'false']).default('false').transform((v) => v === 'true'),
   // Behind Render's proxy the client IP is in X-Forwarded-For.
