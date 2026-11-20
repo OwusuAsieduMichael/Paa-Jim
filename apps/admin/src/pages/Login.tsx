@@ -112,7 +112,7 @@ export function Mfa({ onDone, onSignOut }: { onDone: () => void; onSignOut: () =
         for (const f of data.all.filter((f) => f.factor_type === 'totp' && f.status !== 'verified')) {
           await supabase.auth.mfa.unenroll({ factorId: f.id });
         }
-        const r = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: `Paa Jim admin ${new Date().toISOString().slice(0, 10)}` });
+        const r = await supabase.auth.mfa.enroll({ factorType: 'totp', issuer: 'Paa Jim', friendlyName: `Paa Jim admin ${new Date().toISOString().slice(0, 10)}` });
         if (r.error) throw r.error;
         if (live) { setFactorId(r.data.id); setEnroll({ qr: r.data.totp.qr_code, secret: r.data.totp.secret }); setReady(true); }
       } catch (e) {

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import type { Ctx } from '../context.js';
 import { assertAdmin, assertRole, audit, HttpError } from '../auth.js';
 import { applyPaymentResult } from '../domain/payments.js';
+import { ensureTotpLabel } from '../lib/totp-label.js';
 
 // Admin controls money and people. Every route: admin role + MFA (aal2),
 // zod-validated body, and an admin_actions row with a 10+ char reason.
@@ -116,6 +117,7 @@ export async function adminRoutes(app: FastifyInstance, ctx: Ctx) {
     if (role === 'rider') {
       await db.from('rider_profiles').upsert({ user_id: id, vehicle: body.vehicle ?? 'Motorbike' }, { onConflict: 'user_id' });
     }
+    if (role === 'admin') await ensureTotpLabel(db, id, body.phone);
     // Sessions carry the old role; make them sign in again.
     if (existing) await db.auth.admin.signOut(id).catch(() => undefined);
     return { id, promoted: Boolean(existing) };

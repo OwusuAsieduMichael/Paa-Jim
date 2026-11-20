@@ -6,6 +6,7 @@
 //
 // Needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in apps/api/.env (never commit it).
 import { createClient } from '@supabase/supabase-js';
+import { ensureTotpLabel } from '../src/lib/totp-label.js';
 
 const [rawPhone, ...nameParts] = process.argv.slice(2);
 const fullName = nameParts.join(' ').trim();
@@ -41,6 +42,7 @@ if (existing) {
 
 const { error: upErr } = await db.from('profiles').update({ role: 'admin', full_name: fullName, is_active: true }).eq('id', id);
 if (upErr) fail(`Couldn’t set the admin role: ${upErr.message}`);
+try { await ensureTotpLabel(db, id, phone); } catch (e) { fail((e as Error).message); }
 if (existing) await db.auth.admin.signOut(id).catch(() => undefined);
 
 await db.from('admin_actions').insert({
