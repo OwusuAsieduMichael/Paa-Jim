@@ -139,7 +139,7 @@ export default function RiderDelivery() {
       {region && (
         <MapView provider={MAP_PROVIDER} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '60%' }} initialRegion={region} showsUserLocation showsMyLocationButton={false} toolbarEnabled={false}
           accessibilityLabel="Navigation map to the customer">
-          <Marker coordinate={toLatLng(dest)} anchor={{ x: 0.5, y: 1 }} tracksViewChanges={false} title={o.gpsCode}><Pin /></Marker>
+          <Marker coordinate={toLatLng(dest)} anchor={{ x: 0.5, y: 1 }} tracksViewChanges={false} title={o.gpsCode ?? o.addressLabel}><Pin /></Marker>
           {me && <Polyline coordinates={[toLatLng(me), toLatLng(dest)]} strokeColor={color.primary} strokeWidth={6} lineDashPattern={[1]} />}
         </MapView>
       )}
@@ -148,7 +148,7 @@ export default function RiderDelivery() {
         style={{ position: 'absolute', top: insets.top + 8, left: 16, right: 16, backgroundColor: color.ink, borderRadius: 18, paddingVertical: 14, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 14 }}>
         <Icon name="turnRight" size={28} color="#FFFFFF" strokeWidth={2.5} />
         <View style={{ flex: 1 }}>
-          <Text size={18} weight={800} tone="#FFFFFF">Head to {o.gpsCode}</Text>
+          <Text size={18} weight={800} tone="#FFFFFF">Head to {o.gpsCode ?? o.landmark ?? `the ${o.addressLabel.toLowerCase()} pin`}</Text>
           <Text size={12} tone="rgba(255,255,255,0.8)">{leftKm.toFixed(1)} km left · tap for turn-by-turn</Text>
         </View>
         <Icon name="navigate" size={22} color="#FFFFFF" fill="#FFFFFF" />

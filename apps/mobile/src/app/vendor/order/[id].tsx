@@ -119,7 +119,7 @@ export default function VendorOrder() {
         {o.verifyAttempts >= 5 && o.status !== 'delivered' && <Banner tone="error" icon="lock">Delivery code locked after 5 wrong tries. Confirm with the customer, then force-complete.</Banner>}
 
         <View style={{ backgroundColor: '#FFFFFF', borderRadius: 18, paddingVertical: 14, paddingHorizontal: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-          <Text size={13} tone={color.inkMuted} style={{ flex: 1 }}>Deliver to {o.gpsCode} · {o.distanceKm} km</Text>
+          <Text size={13} tone={color.inkMuted} style={{ flex: 1 }}>Deliver to {o.gpsCode ?? o.addressLabel} · {o.distanceKm} km</Text>
           <Text size={13} weight={800}>{ghs(o.total)} · Paid</Text>
         </View>
         {error && <Banner tone="error" icon="alert">{error}</Banner>}

@@ -55,7 +55,7 @@ export interface MenuItem {
 export interface Address {
   id: string;
   label: 'Home' | 'Work' | 'Other';
-  gpsCode: string;
+  gpsCode: string | null;
   landmark: string | null;
   lat: number;
   lng: number;
@@ -79,7 +79,7 @@ export interface Order {
   total: string;
   items: OrderItem[];
   addressLabel: string;
-  gpsCode: string;
+  gpsCode: string | null;
   landmark: string | null;
   distanceKm: number;
   destLat: number;

@@ -99,7 +99,7 @@ export default function Checkout() {
                 <Icon name="pin" size={18} color={color.primary} />
               </View>
               <View style={{ flex: 1, gap: 2 }}>
-                <Text size={14} weight={700}>{address.label} · {address.gpsCode}</Text>
+                <Text size={14} weight={700}>{address.gpsCode ? `${address.label} · ${address.gpsCode}` : address.label}</Text>
                 <Text size={13} tone={color.inkMuted}>
                   {[address.landmark, quote.data ? `${quote.data.distanceKm} km away` : null].filter(Boolean).join(' · ')}
                 </Text>

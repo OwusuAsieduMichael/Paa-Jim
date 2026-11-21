@@ -250,7 +250,7 @@ export const supabaseBackend: Backend = {
 
   async saveAddress(a) {
     const { data: s } = await supabase.auth.getSession();
-    const row = { user_id: s.session!.user.id, label: a.label, gps_code: a.gpsCode.toUpperCase().trim(), landmark: a.landmark, lat: a.lat, lng: a.lng, is_default: a.isDefault };
+    const row = { user_id: s.session!.user.id, label: a.label, gps_code: a.gpsCode ? a.gpsCode.toUpperCase().trim() : null, landmark: a.landmark, lat: a.lat, lng: a.lng, is_default: a.isDefault };
     const q = a.id
       ? supabase.from('addresses').update(row).eq('id', a.id).select().single()
       : supabase.from('addresses').insert(row).select().single();

@@ -29,6 +29,8 @@ export default function ProfileSetup() {
   const [landmark, setLandmark] = useState('');
   const [label, setLabel] = useState<Address['label']>('Home');
   const [pos, setPos] = useState(DEFAULT_PIN);
+  // True once the pin is really theirs: a saved address, their live location, or a tap on the map.
+  const [placed, setPlaced] = useState(false);
   const [existingId, setExistingId] = useState<string | undefined>();
   const [focus, setFocus] = useState<string | null>(null);
   const [locating, setLocating] = useState(false);
@@ -38,10 +40,17 @@ export default function ProfileSetup() {
   useEffect(() => {
     backend.addresses().then((list) => {
       const a = list.find((x) => x.isDefault) ?? list[0];
-      if (!a) return;
-      setExistingId(a.id); setGps(a.gpsCode); setLandmark(a.landmark ?? ''); setLabel(a.label); setPos({ lat: a.lat, lng: a.lng });
+      if (!a) {
+        // No address yet: ask for location straight away instead of making them type one.
+        if (addressOnly) void locate();
+        return;
+      }
+      setExistingId(a.id); setGps(a.gpsCode ?? ''); setLandmark(a.landmark ?? ''); setLabel(a.label); setPos({ lat: a.lat, lng: a.lng }); setPlaced(true);
     }).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function pick(p: { lat: number; lng: number }) { setPos(p); setPlaced(true); setError(null); }
 
   async function locate() {
     if (locating) return;
@@ -66,13 +75,13 @@ export default function ProfileSetup() {
       }
       // Instant answer if the phone already knows roughly where it is…
       const last = await Location.getLastKnownPositionAsync({ maxAge: 5 * 60_000 }).catch(() => null);
-      if (last) setPos({ lat: last.coords.latitude, lng: last.coords.longitude });
+      if (last) pick({ lat: last.coords.latitude, lng: last.coords.longitude });
       // …then a fresh fix, but never wait forever (indoors a GPS fix can take minutes).
       const fresh = await Promise.race([
         Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
         new Promise<null>((resolve) => setTimeout(() => resolve(null), 15_000)),
       ]);
-      if (fresh) setPos({ lat: fresh.coords.latitude, lng: fresh.coords.longitude });
+      if (fresh) pick({ lat: fresh.coords.latitude, lng: fresh.coords.longitude });
       else if (!last) setError('Couldn’t find you quickly — move near a window, or tap the map to place your pin.');
     } catch {
       setError('Could not get your location. Tap the map to place your pin.');
@@ -83,7 +92,11 @@ export default function ProfileSetup() {
 
   async function save() {
     if (!addressOnly && name.trim().length < 2) return setError('Enter your name so the rider knows who to ask for.');
-    if (!/^[A-Za-z]{2}-?\d{3,4}-?\d{3,4}$/.test(gps.trim())) return setError('Enter your Ghana Post GPS address, e.g. AS-485-9302');
+    const code = gps.trim();
+    // Editing the profile without ever setting an address just saves the name.
+    const withAddress = addressOnly || placed || Boolean(existingId) || Boolean(code) || Boolean(landmark.trim());
+    if (withAddress && !placed) return setError('Tap “Use my location”, or tap the map where the rider should come.');
+    if (code && !/^[A-Za-z]{2}-?\d{3,4}-?\d{3,4}$/.test(code)) return setError('That GPS address doesn’t look right (e.g. AS-485-9302). It’s optional, so you can leave it empty.');
     setBusy(true);
     setError(null);
     try {
@@ -91,7 +104,7 @@ export default function ProfileSetup() {
         await backend.updateName(name.trim());
         if (user) setUser({ ...user, fullName: name.trim() });
       }
-      await backend.saveAddress({ id: existingId, label, gpsCode: gps, landmark: landmark.trim() || null, lat: pos.lat, lng: pos.lng, isDefault: true });
+      if (withAddress) await backend.saveAddress({ id: existingId, label, gpsCode: code || null, landmark: landmark.trim() || null, lat: pos.lat, lng: pos.lng, isDefault: true });
       if ((addressOnly || editing) && router.canGoBack()) router.back();
       else router.replace('/customer');
     } catch (e) {
@@ -140,15 +153,18 @@ export default function ProfileSetup() {
           {!addressOnly && editing && (
             <Text size={17} weight={800} style={{ marginTop: 8 }}>Delivery address</Text>
           )}
-          <Field label="Ghana Post GPS address" value={gps} onChangeText={(t) => setGps(t.toUpperCase())} autoCapitalize="characters" placeholder="AS-485-9302"
-            focused={focus === 'gps'} onFocus={() => setFocus('gps')} onBlur={() => setFocus(null)} />
           <View style={{ height: 150 }}>
-            <MiniMap lat={pos.lat} lng={pos.lng} style={{ flex: 1 }} onPress={setPos} />
+            <MiniMap lat={pos.lat} lng={pos.lng} style={{ flex: 1 }} onPress={pick} />
             <Pressable onPress={locate} accessibilityRole="button" style={{ position: 'absolute', right: 10, bottom: 10, height: 36, borderRadius: 10, backgroundColor: '#FFFFFF', paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center', gap: 6 }}>
               <Icon name="locate" size={16} color={color.primary} />
               <Text size={12} weight={700} tone={color.primary}>{locating ? 'Locating…' : 'Use my location'}</Text>
             </Pressable>
           </View>
+          <Text size={12} tone={color.inkMuted} style={{ marginTop: -8 }}>
+            {placed ? 'Pin set. Tap the map to move it.' : locating ? 'Finding you…' : 'Tap “Use my location”, or tap the map where the rider should come.'}
+          </Text>
+          <Field label="Ghana Post GPS address (optional)" value={gps} onChangeText={(t) => setGps(t.toUpperCase())} autoCapitalize="characters" placeholder="AS-485-9302"
+            focused={focus === 'gps'} onFocus={() => setFocus('gps')} onBlur={() => setFocus(null)} />
           <Field label="Landmark / directions for the rider" value={landmark} onChangeText={setLandmark} placeholder="Blue gate opposite the church"
             style={{ fontFamily: 'PlusJakartaSans_400Regular' }} focused={focus === 'lm'} onFocus={() => setFocus('lm')} onBlur={() => setFocus(null)} />
           <View style={{ flexDirection: 'row', gap: 8 }}>

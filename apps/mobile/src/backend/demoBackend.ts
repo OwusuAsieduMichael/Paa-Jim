@@ -216,8 +216,9 @@ export const demoBackend: Backend = {
 
   async addresses() { return addressBook.map((a) => ({ ...a })); },
   async saveAddress(a) {
-    if (!/^[A-Z]{2}-?\d{3,4}-?\d{3,4}$/i.test(a.gpsCode.trim())) throw new BackendError('Check the GPS address — it looks like AS-485-9302');
-    const saved: Address = { ...a, gpsCode: a.gpsCode.toUpperCase().trim(), id: a.id ?? Crypto.randomUUID() };
+    const code = a.gpsCode?.trim() || null;
+    if (code && !/^[A-Z]{2}-?\d{3,4}-?\d{3,4}$/i.test(code)) throw new BackendError('Check the GPS address — it looks like AS-485-9302');
+    const saved: Address = { ...a, gpsCode: code ? code.toUpperCase() : null, id: a.id ?? Crypto.randomUUID() };
     if (saved.isDefault) addressBook = addressBook.map((x) => ({ ...x, isDefault: false }));
     addressBook = [...addressBook.filter((x) => x.id !== saved.id), saved];
     return saved;
